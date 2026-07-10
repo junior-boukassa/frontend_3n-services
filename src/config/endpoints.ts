@@ -1,0 +1,20 @@
+export const endpoints = {
+  auth: {
+    login: '/auth/login/',
+    register: '/auth/register/',
+    logout: '/auth/logout/',
+    refresh: '/auth/token/refresh/',
+    profile: '/auth/profile/',
+    password: '/auth/password/change/',
+    users: '/auth/admin/users/',
+  },
+  vehicles: '/vehicles/',
+  bookings: '/bookings/',
+  payments: '/payments/',
+  reviews: '/reviews/',
+  logs: '/logs/',
+  agencies: '/agencies/',
+  contact: '/contact/',
+  adminContacts: '/admin/contact-messages/',
+  dashboard: (role: string) => `/dashboard/${role.toLowerCase()}/`,
+};
