@@ -148,8 +148,10 @@ export default function App() {
             element={<RoleAlias roles={['ADMIN']} to="/app/logs" />}
           />
           <Route element={<RoleRoute roles={['ADMIN']} />}>
-            <Route path="/admin/contact-messages" element={<ContactMessagesPage />} />
-            <Route path="/admin/contact-messages/:id" element={<ContactMessageDetailPage />} />
+            <Route path="/admin" element={<AppLayout />}>
+              <Route path="contact-messages" element={<ContactMessagesPage />} />
+              <Route path="contact-messages/:id" element={<ContactMessageDetailPage />} />
+            </Route>
           </Route>
           <Route path="/app" element={<AppLayout />}>
             <Route index element={<Navigate to="dashboard" replace />} />
