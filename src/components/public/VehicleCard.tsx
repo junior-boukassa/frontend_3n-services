@@ -1,7 +1,7 @@
 import { Car, MapPin, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import type { Vehicle } from '../../types';
-import { isDemoMode } from '../../config/demo';
+import { formatCDFPerDay } from '../../utils/format';
 export function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
   return (
     <article className="group overflow-hidden rounded-2xl border bg-white shadow-soft transition hover:-translate-y-1 dark:bg-slate-900">
@@ -36,8 +36,7 @@ export function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
             </p>
           </div>
           <p className="text-right text-lg font-black text-accent-500">
-            {Number(vehicle.daily_price).toLocaleString('fr-FR')}
-            <small className="block font-normal text-slate-400">{isDemoMode ? 'USD / jour' : 'FCFA / jour'}</small>
+            {formatCDFPerDay(Number(vehicle.daily_price))}
           </p>
         </div>
         <div className="mt-4 flex justify-between border-t pt-4 text-sm text-slate-500">

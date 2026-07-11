@@ -10,13 +10,10 @@ import {
 import { authService } from '../services';
 import { tokenStore } from '../api/client';
 import type { User } from '../types';
-import { isDemoMode } from '../config/demo';
-import { demoUser } from '../demo/demoAccount';
 interface AuthValue {
   user: User | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  demoLogin: () => void;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
 }
@@ -25,11 +22,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const refreshUser = useCallback(async () => {
-    if (isDemoMode && sessionStorage.getItem('three-n-demo-session') === 'true') {
-      setUser(demoUser);
-      setLoading(false);
-      return;
-    }
     if (!tokenStore.getAccess() && !tokenStore.getRefresh()) {
       setLoading(false);
       return;
@@ -58,11 +50,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(data.user);
   };
   const logout = async () => {
-    if (isDemoMode && sessionStorage.getItem('three-n-demo-session') === 'true') {
-      sessionStorage.removeItem('three-n-demo-session');
-      setUser(null);
-      return;
-    }
     try {
       await authService.logout(tokenStore.getRefresh());
     } finally {
@@ -70,13 +57,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(null);
     }
   };
-  const demoLogin = () => {
-    if (!isDemoMode) return;
-    sessionStorage.setItem('three-n-demo-session', 'true');
-    setUser(demoUser);
-  };
   const value = useMemo(
-    () => ({ user, loading, login, demoLogin, logout, refreshUser }),
+    () => ({ user, loading, login, logout, refreshUser }),
     [user, loading, refreshUser],
   );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

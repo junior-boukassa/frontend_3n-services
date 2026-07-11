@@ -9,6 +9,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { dataService } from '../services';
 import { apiError } from '../api/client';
 import { EmptyState, ErrorState, Modal, PageLoader } from '../components/ui';
+import { formatCDFPerDay } from '../utils/format';
 
 export function VehiclesPage() {
   const { user } = useAuth();
@@ -101,10 +102,7 @@ export function VehiclesPage() {
                     </p>
                   </div>
                   <p className="font-bold text-brand-600">
-                    {Number(v.daily_price).toLocaleString('fr-FR')}
-                    <span className="block text-right text-xs font-normal text-slate-400">
-                      FCFA/jour
-                    </span>
+                    {formatCDFPerDay(Number(v.daily_price))}
                   </p>
                 </div>
                 <div className="mt-4 flex items-center justify-between border-t pt-4 text-sm text-slate-500">

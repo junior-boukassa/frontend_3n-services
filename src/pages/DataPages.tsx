@@ -11,6 +11,7 @@ import { EmptyState, ErrorState, Modal, PageLoader } from '../components/ui';
 import { useAuth } from '../contexts/AuthContext';
 import { dataService } from '../services';
 import type { Booking } from '../types';
+import { formatCDF, formatCDFPerDay } from '../utils/format';
 
 const statusLabel: Record<string, string> = {
   PENDING: 'En attente',
@@ -100,7 +101,7 @@ export function BookingsPage() {
               {new Date(b.end_date).toLocaleDateString('fr-FR')}
               <small className="block text-slate-400">{b.duration_days} jour(s)</small>
             </span>,
-            `${Number(b.total_price).toLocaleString('fr-FR')} FCFA`,
+            formatCDF(Number(b.total_price)),
             <span className={`badge ${badge(b.status)}`}>{statusLabel[b.status]}</span>,
             <div className="flex gap-2">
               {user?.role === 'CLIENT' && b.status === 'PENDING' && (
@@ -188,7 +189,7 @@ function BookingForm({ onDone }: { onDone: () => void }) {
           <option value="">Sélectionner…</option>
           {vehicles.data?.map((v) => (
             <option key={v.id} value={v.id}>
-              {v.brand} {v.model} · {Number(v.daily_price).toLocaleString('fr-FR')} FCFA/jour
+              {v.brand} {v.model} · {formatCDFPerDay(Number(v.daily_price))}
             </option>
           ))}
         </select>
@@ -250,7 +251,7 @@ export function PaymentsPage() {
         </Link>,
         p.booking_vehicle,
         p.method.replace('_', ' '),
-        `${Number(p.amount).toLocaleString('fr-FR')} FCFA`,
+        formatCDF(Number(p.amount)),
         <span className={`badge ${badge(p.status)}`}>{statusLabel[p.status]}</span>,
         p.status === 'PENDING' ? (
           <button

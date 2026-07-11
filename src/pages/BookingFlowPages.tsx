@@ -11,6 +11,7 @@ import { ErrorState, PageLoader } from '../components/ui';
 import { dataService } from '../services';
 import { useAuth } from '../contexts/AuthContext';
 import type { Booking, Payment } from '../types';
+import { formatCDF, formatCDFPerDay } from '../utils/format';
 const schema = z
   .object({
     start_date: z.string().min(1, 'Date de début requise'),
@@ -92,7 +93,7 @@ export function VehicleBookingPage() {
             {v.owner_email} · {v.owner_city || 'Ville non renseignée'}
           </p>
           <p className="mt-5 text-xl font-bold text-brand-600">
-            {Number(v.daily_price).toLocaleString('fr-FR')} FCFA / jour
+            {formatCDFPerDay(Number(v.daily_price))}
           </p>
         </aside>
         <section className="card">
@@ -126,7 +127,7 @@ export function VehicleBookingPage() {
               <div className="mt-3 flex justify-between border-t pt-3">
                 <span>Montant estimé</span>
                 <b className="text-xl text-brand-600">
-                  {(days * Number(v.daily_price)).toLocaleString('fr-FR')} FCFA
+                  {formatCDF(days * Number(v.daily_price))}
                 </b>
               </div>
             </div>
@@ -200,7 +201,7 @@ export function BookingDetailPage() {
               ['Début', new Date(b.start_date).toLocaleDateString('fr-FR')],
               ['Fin', new Date(b.end_date).toLocaleDateString('fr-FR')],
               ['Durée', `${b.duration_days} jour(s)`],
-              ['Montant', `${Number(b.total_price).toLocaleString('fr-FR')} FCFA`],
+              ['Montant', formatCDF(Number(b.total_price))],
             ].map(([label, value]) => (
               <div key={label}>
                 <dt className="text-xs text-slate-400">{label}</dt>
@@ -300,7 +301,7 @@ export function PaymentDemoPage() {
           {b.vehicle_detail.brand} {b.vehicle_detail.model}
         </p>
         <p className="mt-6 text-3xl font-black text-brand-600">
-          {Number(b.total_price).toLocaleString('fr-FR')} FCFA
+          {formatCDF(Number(b.total_price))}
         </p>
         <label className="label mt-6">
           Méthode indicative
@@ -353,7 +354,7 @@ export function PaymentDetailPage() {
           {[
             ['Réservation', `#${p.booking}`],
             ['Véhicule', p.booking_vehicle],
-            ['Montant', `${Number(p.amount).toLocaleString('fr-FR')} FCFA`],
+            ['Montant', formatCDF(Number(p.amount))],
             ['Méthode', p.method.replace('_', ' ')],
             ['Référence', p.transaction_reference || 'Non attribuée'],
             ['Date', new Date(p.created_at).toLocaleString('fr-FR')],

@@ -6,6 +6,7 @@ import { dataService } from '../services';
 import { apiError } from '../api/client';
 import { ErrorState, PageLoader } from '../components/ui';
 import { brandColors } from '../config/theme';
+import { formatCDF } from '../utils/format';
 const names: Record<string, string> = {
   total_users: 'Utilisateurs',
   agency_count: 'Agences',
@@ -68,7 +69,7 @@ export function DashboardPage() {
           const percent = k.includes('rate')
             ? `${Math.round(Number(v) * 100)}%`
             : k.includes('revenue') || k.includes('spent')
-              ? `${Number(v).toLocaleString('fr-FR')} FCFA`
+              ? formatCDF(Number(v))
               : String(v);
           return (
             <div className="card" key={k}>
