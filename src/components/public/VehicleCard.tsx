@@ -35,7 +35,7 @@ export function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
               {vehicle.owner_city || 'Localisation non renseignée'}
             </p>
           </div>
-          <p className="text-right text-lg font-black text-[#FF9500]">
+          <p className="text-right text-lg font-black text-accent-500">
             {Number(vehicle.daily_price).toLocaleString('fr-FR')}
             <small className="block font-normal text-slate-400">{isDemoMode ? 'USD / jour' : 'FCFA / jour'}</small>
           </p>

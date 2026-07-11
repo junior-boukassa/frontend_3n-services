@@ -26,12 +26,12 @@ export function HomePage() {
   });
   return (
     <main>
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#071020] via-[#071B5C] to-[#0B45D8] text-white">
-        <div className="absolute inset-0 opacity-50 bg-[radial-gradient(circle_at_78%_30%,rgba(20,108,255,.45),transparent_38%)]" />
+      <section className="relative overflow-hidden bg-gradient-to-br from-night-950 via-brand-900 to-brand-600 text-white">
+        <div className="absolute inset-0 opacity-50 bg-[radial-gradient(circle_at_78%_30%,var(--brand-glow),transparent_38%)]" />
         <div className="relative mx-auto grid min-h-[640px] max-w-7xl items-center gap-12 px-6 py-20 lg:grid-cols-2">
           <div className="relative z-10">
             {isDemoMode && <span className="mb-6 inline-flex rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold">Mode démonstration</span>}
-            <p className="mb-5 text-sm font-bold uppercase tracking-[.25em] text-[#69A3FF]">
+            <p className="mb-5 text-sm font-bold uppercase tracking-[.25em] text-brand-100">
               La mobilité, simplement
             </p>
             <h1 className="max-w-3xl text-5xl font-black leading-[1.08] sm:text-6xl">
@@ -54,7 +54,7 @@ export function HomePage() {
             </div>
           </div>
           <div className="relative z-10">
-            {isDemoMode && <div className="relative mb-5 overflow-hidden rounded-[2rem] border border-white/15 bg-white/5 shadow-2xl"><img className="aspect-[16/10] w-full object-cover" src={demoVehicles[0].images?.[0].image} alt="Toyota Noah blanc de démonstration"/><span className="absolute bottom-4 right-4 rounded-2xl bg-[#FF9500] px-4 py-2 font-black text-white">Dès 80 USD</span></div>}
+            {isDemoMode && <div className="relative mb-5 overflow-hidden rounded-[2rem] border border-white/15 bg-white/5 shadow-2xl"><img className="aspect-[16/10] w-full object-cover" src={demoVehicles[0].images?.[0].image} alt="Toyota Noah blanc de démonstration"/><span className="absolute bottom-4 right-4 rounded-2xl bg-accent-500 px-4 py-2 font-black text-white">Dès 80 USD</span></div>}
           <form
             onSubmit={(e) => {
               e.preventDefault();

@@ -19,7 +19,7 @@ const badge = (s: ContactStatus) =>
     : s === 'SPAM'
       ? 'bg-red-100 text-red-700'
       : s === 'IN_PROGRESS'
-        ? 'bg-blue-100 text-blue-700'
+        ? 'bg-brand-100 text-brand-700'
         : 'bg-amber-100 text-amber-700';
 export function ContactMessagesPage() {
   const [search, setSearch] = useState('');

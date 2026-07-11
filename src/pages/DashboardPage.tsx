@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { dataService } from '../services';
 import { apiError } from '../api/client';
 import { ErrorState, PageLoader } from '../components/ui';
+import { brandColors } from '../config/theme';
 const names: Record<string, string> = {
   total_users: 'Utilisateurs',
   agency_count: 'Agences',
@@ -97,7 +98,7 @@ export function DashboardPage() {
                 <XAxis dataKey="label" />
                 <YAxis allowDecimals={false} />
                 <Tooltip />
-                <Bar dataKey="value" name="Réservations" fill="#16a069" radius={[8, 8, 0, 0]} />
+                <Bar dataKey="value" name="Réservations" fill={brandColors.primaryHover} radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -108,7 +109,7 @@ export function DashboardPage() {
           <h3 className="font-bold">Actions rapides</h3>
           <div className="mt-4 grid gap-3 sm:grid-cols-3">
             <a
-              className="rounded-xl bg-brand-50 p-4 text-sm font-semibold text-brand-700 dark:bg-slate-800"
+              className="rounded-xl bg-brand-50 p-4 text-sm font-semibold text-brand-700 dark:bg-brand-900 dark:text-brand-100"
               href="/app/vehicles"
             >
               Voir le catalogue

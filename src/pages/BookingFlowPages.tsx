@@ -130,7 +130,7 @@ export function VehicleBookingPage() {
                 </b>
               </div>
             </div>
-            <div className="flex gap-3 rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
+            <div className="flex gap-3 rounded-xl border border-brand-200 bg-brand-50 p-4 text-sm text-brand-700">
               <Info className="shrink-0" size={19} /> Le montant définitif est calculé et validé par
               le serveur.
             </div>

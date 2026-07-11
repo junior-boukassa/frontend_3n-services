@@ -128,7 +128,7 @@ export function LoginPage() {
           {isSubmitting ? 'Connexion…' : 'Se connecter'}
         </button>
       </form>
-      {isDemoMode && <div className="mt-5 rounded-2xl border border-brand-100 bg-brand-50 p-4 dark:bg-[#0B1730]">
+      {isDemoMode && <div className="mt-5 rounded-2xl border border-brand-100 bg-brand-50 p-4 dark:bg-night-900">
         <p className="text-sm font-bold text-brand-700 dark:text-brand-100">Données de démonstration — aucune opération réelle ne sera enregistrée</p>
         <p className="mt-2 text-xs text-slate-500">{demoCredentials.email} · {demoCredentials.password}</p>
         <button className="btn-secondary mt-3 w-full" onClick={() => { demoLogin(); nav('/app/dashboard'); }}>Explorer avec le compte démo</button>

@@ -25,7 +25,7 @@ export function PublicLayout() {
   return (
     <div className="min-h-screen">
       <header className="sticky top-0 z-40 border-b bg-white/90 backdrop-blur-xl dark:bg-slate-950/90">
-        {isDemoMode && <div className="bg-[#FF9500] px-4 py-1.5 text-center text-xs font-bold text-white">Mode démonstration · aucune opération réelle</div>}
+        {isDemoMode && <div className="bg-accent-500 px-4 py-1.5 text-center text-xs font-bold text-white">Mode démonstration · aucune opération réelle</div>}
         <div className="mx-auto flex h-20 max-w-7xl items-center px-4 sm:px-6">
           <Link to="/" className="flex items-center gap-3 font-black tracking-wide">
             <span className="text-xl leading-none text-brand-900 dark:text-white">three-<b className="text-brand-500">N</b><small className="mt-1 block text-[8px] tracking-[.35em]">SERVICES</small></span>
@@ -36,7 +36,7 @@ export function PublicLayout() {
                 key={to}
                 to={to}
                 className={({ isActive }) =>
-                  `rounded-lg px-3 py-2 text-sm font-medium ${isActive ? 'bg-brand-50 text-brand-700 dark:bg-slate-800' : 'text-slate-600 hover:text-brand-600 dark:text-slate-300'}`
+                  `rounded-lg px-3 py-2 text-sm font-medium ${isActive ? 'bg-brand-50 text-brand-700 dark:bg-brand-900 dark:text-brand-100' : 'text-slate-600 hover:text-brand-600 dark:text-slate-300'}`
                 }
               >
                 {label}

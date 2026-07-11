@@ -104,7 +104,7 @@ export function VehicleDetailPage() {
             <MapPin size={15} />
             {v.owner_city || 'Localisation non renseignée'} · {v.owner_email}
           </p>
-          <p className="mt-7 text-3xl font-black text-[#FF9500]">
+          <p className="mt-7 text-3xl font-black text-accent-500">
             {Number(v.daily_price).toLocaleString('fr-FR')}{' '}
             <small className="text-sm font-normal text-slate-500">{isDemoMode ? 'USD / jour' : 'FCFA / jour'}</small>
           </p>
