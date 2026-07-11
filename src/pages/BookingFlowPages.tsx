@@ -90,7 +90,8 @@ export function VehicleBookingPage() {
             {v.brand} {v.model}
           </h1>
           <p className="mt-1 text-sm text-slate-500">
-            {v.owner_email} · {v.owner_city || 'Ville non renseignée'}
+            {v.agency_name?.trim() || 'Agence Three-N Services'} ·{' '}
+            {v.owner_city || 'Ville non renseignée'}
           </p>
           <p className="mt-5 text-xl font-bold text-brand-600">
             {formatCDFPerDay(Number(v.daily_price))}
@@ -197,7 +198,7 @@ export function BookingDetailPage() {
           <dl className="mt-5 grid gap-5 sm:grid-cols-2">
             {[
               ['Client', b.client_email],
-              ['Agence', b.vehicle_detail.owner_email],
+              ['Agence', b.vehicle_detail.agency_name?.trim() || 'Agence Three-N Services'],
               ['Début', new Date(b.start_date).toLocaleDateString('fr-FR')],
               ['Fin', new Date(b.end_date).toLocaleDateString('fr-FR')],
               ['Durée', `${b.duration_days} jour(s)`],

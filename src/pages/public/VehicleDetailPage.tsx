@@ -101,7 +101,8 @@ export function VehicleDetailPage() {
           </h1>
           <p className="mt-2 flex items-center gap-1 text-sm text-slate-500">
             <MapPin size={15} />
-            {v.owner_city || 'Localisation non renseignée'} · {v.owner_email}
+            {v.owner_city || 'Localisation non renseignée'} ·{' '}
+            {v.agency_name?.trim() || 'Agence Three-N Services'}
           </p>
           <p className="mt-7 text-3xl font-black text-accent-500">
             {formatCDFPerDay(Number(v.daily_price))}

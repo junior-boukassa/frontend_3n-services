@@ -21,7 +21,7 @@ export interface User {
 export interface Vehicle {
   id: number;
   owner: number;
-  owner_email: string;
+  agency_name: string;
   owner_city: string;
   brand: string;
   model: string;
