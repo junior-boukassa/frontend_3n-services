@@ -25,13 +25,13 @@ export interface Vehicle {
   owner_city: string;
   brand: string;
   model: string;
-  year: number;
+  year: number | null;
   registration_plate: string;
   color: string;
   category: 'CITY' | 'SEDAN' | 'SUV' | 'VAN' | 'PICKUP' | 'LUXURY' | null;
   seats: number | null;
-  fuel_type: 'PETROL' | 'DIESEL' | 'ELECTRIC' | 'HYBRID';
-  transmission: 'MANUAL' | 'AUTOMATIC';
+  fuel_type: 'PETROL' | 'DIESEL' | 'ELECTRIC' | 'HYBRID' | null;
+  transmission: 'MANUAL' | 'AUTOMATIC' | null;
   daily_price: string;
   status: 'AVAILABLE' | 'RESERVED' | 'MAINTENANCE' | 'OUT_OF_SERVICE';
   description?: string;

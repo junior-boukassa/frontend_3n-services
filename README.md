@@ -17,9 +17,22 @@ Variable disponible :
 
 ```env
 VITE_API_BASE_URL=http://127.0.0.1:8001/api
+VITE_DEMO_MODE=false
 ```
 
 N’ajoutez jamais de secret backend dans une variable `VITE_*` : ces valeurs sont intégrées au bundle public.
+
+## Identité Three-N et mode démonstration
+
+La palette est centralisée dans `tailwind.config.js` : bleu nuit `#071B5C`, bleu royal `#0B45D8`, bleu vif `#146CFF` et accent tarifaire orange `#FF9500`. Le vert reste réservé aux états fonctionnels de succès et de disponibilité.
+
+Le catalogue local est isolé dans `src/demo`, sa configuration dans `src/config/demo.ts` et ses images dans `src/assets/demo/vehicles`. Activation :
+
+```bash
+VITE_DEMO_MODE=true npm run dev
+```
+
+Le compte public `demo@3n-services.local` / `Demo3N2026!` crée uniquement une session frontend temporaire. Il ne génère aucun JWT et les créations de réservation ou paiement sont bloquées. **Le mode démonstration ne doit jamais être activé en production.** Pour revenir aux seules données API, utilisez `VITE_DEMO_MODE=false` puis redémarrez Vite.
 
 ## Commandes
 

@@ -15,6 +15,8 @@ import type {
   ContactStatus,
   PublicGlobalReview,
 } from '../types';
+import { isDemoMode } from '../config/demo';
+import { demoVehicles, DEMO_VEHICLE_ID } from '../demo/demoVehicles';
 async function allPages<T>(url: string, params?: Record<string, string | number>): Promise<T[]> {
   const first = (await api.get<Paginated<T> | T[]>(url, { params })).data;
   if (Array.isArray(first)) return first;
@@ -39,29 +41,31 @@ export const authService = {
 };
 export const dataService = {
   vehicles: async (params?: Record<string, string | number>) =>
-    allPages<Vehicle>(endpoints.vehicles, params),
-  vehicle: (id: number) => api.get<Vehicle>(`${endpoints.vehicles}${id}/`),
+    isDemoMode ? demoVehicles : allPages<Vehicle>(endpoints.vehicles, params),
+  vehicle: (id: number) => isDemoMode && id === DEMO_VEHICLE_ID
+    ? Promise.resolve({ data: demoVehicles[0] })
+    : api.get<Vehicle>(`${endpoints.vehicles}${id}/`),
   saveVehicle: (data: Partial<Vehicle>, id?: number) =>
     id ? api.patch(`${endpoints.vehicles}${id}/`, data) : api.post(endpoints.vehicles, data),
   deleteVehicle: (id: number) => api.delete(`${endpoints.vehicles}${id}/`),
-  bookings: async () => allPages<Booking>(endpoints.bookings),
+  bookings: async () => isDemoMode ? [] : allPages<Booking>(endpoints.bookings),
   booking: (id: number) => api.get<Booking>(`${endpoints.bookings}${id}/`).then((r) => r.data),
   createBooking: (data: { vehicle_id: number; start_date: string; end_date: string }) =>
-    api.post(endpoints.bookings, data),
+    isDemoMode ? Promise.reject(new Error('Mode démonstration : aucune réservation réelle enregistrée.')) : api.post(endpoints.bookings, data),
   bookingStatus: (id: number, status: Booking['status']) =>
     api.post(`${endpoints.bookings}${id}/set_status/`, { status }),
   cancelBooking: (id: number) => api.post(`${endpoints.bookings}${id}/cancel/`),
-  payments: async () => allPages<Payment>(endpoints.payments),
+  payments: async () => isDemoMode ? [] : allPages<Payment>(endpoints.payments),
   payment: (id: number) => api.get<Payment>(`${endpoints.payments}${id}/`).then((r) => r.data),
   createPayment: (data: { booking_id: number; method: Payment['method']; amount: string }) =>
-    api.post(endpoints.payments, data),
+    isDemoMode ? Promise.reject(new Error('Mode démonstration : aucun paiement réel enregistré.')) : api.post(endpoints.payments, data),
   confirmPayment: (id: number) =>
     api.post(`${endpoints.payments}${id}/confirm/`, { simulate_success: true }),
-  reviews: async () => allPages<Review>(endpoints.reviews),
+  reviews: async () => isDemoMode ? [] : allPages<Review>(endpoints.reviews),
   createReview: (data: { booking: number; rating: number; comment: string }) =>
     api.post(endpoints.reviews, data),
   publicReviews: (vehicleId: number) =>
-    api
+    isDemoMode ? Promise.resolve([]) : api
       .get<PublicReview[]>(`${endpoints.reviews}for-vehicle/`, {
         params: { vehicle_id: vehicleId },
       })
@@ -76,7 +80,9 @@ export const dataService = {
   updateUser: (id: number, data: Partial<User>) => api.patch(`${endpoints.auth.users}${id}/`, data),
   deleteUser: (id: number) => api.delete(`${endpoints.auth.users}${id}/`),
   logs: async () => allPages<ActivityLog>(endpoints.logs),
-  dashboard: (role: Role) => api.get<Record<string, unknown>>(endpoints.dashboard(role)),
+  dashboard: (role: Role) => isDemoMode
+    ? Promise.resolve({ data: { total_bookings: 0, total_payments: 0, total_vehicles: demoVehicles.length } as Record<string, unknown> })
+    : api.get<Record<string, unknown>>(endpoints.dashboard(role)),
 };
 
 export const agencyService = {

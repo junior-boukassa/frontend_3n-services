@@ -7,6 +7,8 @@ import { useAuth } from '../../contexts/AuthContext';
 import { dataService } from '../../services';
 import { useSeo } from '../../components/public/PublicLayout';
 import { VehicleCard } from '../../components/public/VehicleCard';
+import { isDemoMode } from '../../config/demo';
+import { demoVehicleTerms } from '../../demo/demoVehicles';
 export function VehicleDetailPage() {
   const { id } = useParams();
   const vehicleId = Number(id);
@@ -102,15 +104,15 @@ export function VehicleDetailPage() {
             <MapPin size={15} />
             {v.owner_city || 'Localisation non renseignée'} · {v.owner_email}
           </p>
-          <p className="mt-7 text-3xl font-black text-brand-600">
+          <p className="mt-7 text-3xl font-black text-[#FF9500]">
             {Number(v.daily_price).toLocaleString('fr-FR')}{' '}
-            <small className="text-sm font-normal text-slate-500">FCFA / jour</small>
+            <small className="text-sm font-normal text-slate-500">{isDemoMode ? 'USD / jour' : 'FCFA / jour'}</small>
           </p>
           <div className="mt-6 grid grid-cols-2 gap-3 text-sm">
             {[
-              [v.year, 'Année'],
-              [v.transmission === 'MANUAL' ? 'Manuelle' : 'Automatique', 'Transmission'],
-              [v.fuel_type, 'Carburant'],
+              [v.year || 'Non renseignée', 'Année'],
+              [v.transmission ? (v.transmission === 'MANUAL' ? 'Manuelle' : 'Automatique') : 'Non renseignée', 'Transmission'],
+              [v.fuel_type || 'Non renseigné', 'Carburant'],
               [v.color, 'Couleur'],
               [v.category || 'Non renseignée', 'Catégorie'],
               [v.seats ? `${v.seats} places` : 'Non renseigné', 'Capacité'],
@@ -156,10 +158,7 @@ export function VehicleDetailPage() {
         <div className="card">
           <h2 className="font-bold">Conditions essentielles</h2>
           <ul className="mt-4 space-y-3 text-sm text-slate-500">
-            <li>Dates soumises à disponibilité réelle</li>
-            <li>Prix calculé par journée de location</li>
-            <li>Compte client requis pour réserver</li>
-            <li>Conditions finales confirmées par l’agence</li>
+            {(isDemoMode ? demoVehicleTerms : ['Dates soumises à disponibilité réelle', 'Prix calculé par journée de location', 'Compte client requis pour réserver', 'Conditions finales confirmées par l’agence']).map((term) => <li key={term}>• {term}</li>)}
           </ul>
         </div>
       </section>

@@ -1,6 +1,7 @@
 import { Car, MapPin, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import type { Vehicle } from '../../types';
+import { isDemoMode } from '../../config/demo';
 export function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
   return (
     <article className="group overflow-hidden rounded-2xl border bg-white shadow-soft transition hover:-translate-y-1 dark:bg-slate-900">
@@ -34,23 +35,24 @@ export function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
               {vehicle.owner_city || 'Localisation non renseignée'}
             </p>
           </div>
-          <p className="text-right font-bold text-brand-600">
+          <p className="text-right text-lg font-black text-[#FF9500]">
             {Number(vehicle.daily_price).toLocaleString('fr-FR')}
-            <small className="block font-normal text-slate-400">FCFA/jour</small>
+            <small className="block font-normal text-slate-400">{isDemoMode ? 'USD / jour' : 'FCFA / jour'}</small>
           </p>
         </div>
         <div className="mt-4 flex justify-between border-t pt-4 text-sm text-slate-500">
           <span>
-            {vehicle.year} · {vehicle.transmission === 'MANUAL' ? 'Manuelle' : 'Automatique'}
+            {vehicle.year || 'Année non renseignée'} · {vehicle.transmission ? (vehicle.transmission === 'MANUAL' ? 'Manuelle' : 'Automatique') : 'Transmission non renseignée'}
           </span>
           <span className="flex items-center gap-1">
             <Star size={15} className="fill-amber-400 text-amber-400" />
             {vehicle.average_rating || '—'} ({vehicle.review_count})
           </span>
         </div>
-        <Link className="btn-secondary mt-4 w-full" to={`/vehicles/${vehicle.id}`}>
-          Consulter le véhicule
-        </Link>
+        <div className="mt-4 grid grid-cols-2 gap-2">
+          <Link className="btn-secondary" to={`/vehicles/${vehicle.id}`}>Détails</Link>
+          <Link className="btn-primary" to={`/vehicles/${vehicle.id}/book`}>Réserver</Link>
+        </div>
       </div>
     </article>
   );

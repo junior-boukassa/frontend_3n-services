@@ -8,6 +8,8 @@ import { toast } from 'sonner';
 import { useAuth } from '../../contexts/AuthContext';
 import { apiError } from '../../api/client';
 import { authService } from '../../services';
+import { isDemoMode } from '../../config/demo';
+import { demoCredentials } from '../../demo/demoAccount';
 const loginSchema = z.object({
   email: z.string().email('Adresse e-mail invalide'),
   password: z.string().min(8, '8 caractères minimum'),
@@ -68,7 +70,7 @@ function Shell({
   );
 }
 export function LoginPage() {
-  const { login } = useAuth();
+  const { login, demoLogin } = useAuth();
   const nav = useNavigate();
   const loc = useLocation();
   const [show, setShow] = useState(false);
@@ -126,6 +128,11 @@ export function LoginPage() {
           {isSubmitting ? 'Connexion…' : 'Se connecter'}
         </button>
       </form>
+      {isDemoMode && <div className="mt-5 rounded-2xl border border-brand-100 bg-brand-50 p-4 dark:bg-[#0B1730]">
+        <p className="text-sm font-bold text-brand-700 dark:text-brand-100">Données de démonstration — aucune opération réelle ne sera enregistrée</p>
+        <p className="mt-2 text-xs text-slate-500">{demoCredentials.email} · {demoCredentials.password}</p>
+        <button className="btn-secondary mt-3 w-full" onClick={() => { demoLogin(); nav('/app/dashboard'); }}>Explorer avec le compte démo</button>
+      </div>}
       <p className="mt-6 text-center text-sm text-slate-500">
         Nouveau sur 3N ?{' '}
         <Link to="/register" className="font-semibold text-brand-600">

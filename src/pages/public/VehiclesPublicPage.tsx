@@ -42,7 +42,7 @@ export function VehiclesPublicPage() {
         ? Number(a.daily_price) - Number(b.daily_price)
         : order === 'price_desc'
           ? Number(b.daily_price) - Number(a.daily_price)
-          : b.year - a.year,
+          : (b.year || 0) - (a.year || 0),
     );
   }, [q.data, params]);
   const pages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));

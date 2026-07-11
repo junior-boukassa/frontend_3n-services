@@ -5,18 +5,18 @@ export default {
   theme: {
     extend: {
       colors: {
-        ink: '#18221d',
-        cream: '#f6f7f2',
+        ink: '#0B1538',
+        cream: '#F5F7FB',
         brand: {
-          50: '#effaf5',
-          100: '#d8f3e7',
-          500: '#16a069',
-          600: '#0c8154',
-          700: '#096744',
-          900: '#143a2c',
+          50: '#F5F8FF',
+          100: '#EAF2FF',
+          500: '#146CFF',
+          600: '#0B45D8',
+          700: '#0837B0',
+          900: '#071B5C',
         },
       },
-      boxShadow: { soft: '0 12px 35px rgba(20,58,44,.08)' },
+      boxShadow: { soft: '0 14px 40px rgba(7,27,92,.09)' },
     },
   },
   plugins: [],
