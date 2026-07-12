@@ -9,7 +9,7 @@ export function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
         to={`/vehicles/${vehicle.id}`}
         className="relative grid h-52 place-items-center overflow-hidden bg-gradient-to-br from-slate-100 to-brand-50 dark:from-slate-800 dark:to-brand-900"
       >
-        {vehicle.images?.[0] ? (
+        {vehicle.images[0]?.image ? (
           <img
             className="size-full object-cover transition duration-500 group-hover:scale-105"
             src={vehicle.images[0].image}

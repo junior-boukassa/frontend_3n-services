@@ -1,6 +1,7 @@
 import { ArrowLeft, CalendarDays, Car, Check, MapPin, Star } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
 import { apiError } from '../../api/client';
 import { ErrorState, PageLoader, EmptyState } from '../../components/ui';
 import { useAuth } from '../../contexts/AuthContext';
@@ -11,6 +12,7 @@ import { formatCDFPerDay } from '../../utils/format';
 export function VehicleDetailPage() {
   const { id } = useParams();
   const vehicleId = Number(id);
+  const [activeImage, setActiveImage] = useState(0);
   const { user } = useAuth();
   const nav = useNavigate();
   const vehicle = useQuery({
@@ -44,6 +46,8 @@ export function VehicleDetailPage() {
       </main>
     );
   const v = vehicle.data!;
+  const gallery = v.images.filter((image) => Boolean(image.image));
+  const selectedImage = gallery[activeImage] || gallery[0];
   const book = () => {
     const destination = `/vehicles/${v.id}/book`;
     if (!user) nav('/login', { state: { from: destination } });
@@ -61,25 +65,32 @@ export function VehicleDetailPage() {
       <div className="mt-7 grid gap-8 lg:grid-cols-[1.5fr_1fr]">
         <section>
           <div className="grid h-[430px] place-items-center overflow-hidden rounded-3xl bg-gradient-to-br from-slate-100 to-brand-50 dark:from-slate-800 dark:to-brand-900">
-            {v.images?.[0] ? (
+            {selectedImage?.image ? (
               <img
                 className="size-full object-cover"
-                src={v.images[0].image}
-                alt={`${v.brand} ${v.model}`}
+                src={selectedImage.image}
+                alt={selectedImage.caption || `${v.brand} ${v.model}`}
               />
             ) : (
               <Car size={110} className="text-brand-600/25" />
             )}
           </div>
-          {v.images && v.images.length > 1 && (
-            <div className="mt-3 grid grid-cols-4 gap-3">
-              {v.images.slice(1, 5).map((img) => (
-                <img
-                  className="h-24 w-full rounded-xl object-cover"
-                  src={img.image}
-                  alt={img.caption || v.model}
+          {gallery.length > 1 && (
+            <div className="mt-3 grid grid-cols-3 gap-3">
+              {gallery.map((img, index) => (
+                <button
+                  type="button"
+                  className={`overflow-hidden rounded-xl border-2 ${index === activeImage ? 'border-brand-600' : 'border-transparent'}`}
+                  onClick={() => setActiveImage(index)}
+                  aria-label={`Afficher l’image ${index + 1} de ${v.brand} ${v.model}`}
                   key={img.id}
-                />
+                >
+                  <img
+                    className="h-24 w-full object-cover"
+                    src={img.image!}
+                    alt={img.caption || `${v.brand} ${v.model}, vue ${index + 1}`}
+                  />
+                </button>
               ))}
             </div>
           )}

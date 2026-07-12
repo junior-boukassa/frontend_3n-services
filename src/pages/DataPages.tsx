@@ -154,9 +154,11 @@ const bookingSchema = z
   .object({
     vehicle_id: z.coerce.number().positive(),
     start_date: z.string().min(1, 'Requis'),
+    start_time: z.string().min(1, 'Requis'),
     end_date: z.string().min(1, 'Requis'),
+    end_time: z.string().min(1, 'Requis'),
   })
-  .refine((v) => v.end_date >= v.start_date, {
+  .refine((v) => `${v.end_date}T${v.end_time}` > `${v.start_date}T${v.start_time}`, {
     path: ['end_date'],
     message: 'La date de fin doit être après la date de début',
   });
@@ -207,9 +209,19 @@ function BookingForm({ onDone }: { onDone: () => void }) {
           <small className="text-red-600">{errors.start_date?.message}</small>
         </label>
         <label className="label">
+          Heure de début
+          <input className="field mt-1" type="time" required {...register('start_time')} />
+          <small className="text-red-600">{errors.start_time?.message}</small>
+        </label>
+        <label className="label">
           Date de fin
           <input className="field mt-1" type="date" {...register('end_date')} />
           <small className="text-red-600">{errors.end_date?.message}</small>
+        </label>
+        <label className="label">
+          Heure de fin
+          <input className="field mt-1" type="time" required {...register('end_time')} />
+          <small className="text-red-600">{errors.end_time?.message}</small>
         </label>
       </div>
       {errors.root && <p className="text-sm text-red-600">{errors.root.message}</p>}

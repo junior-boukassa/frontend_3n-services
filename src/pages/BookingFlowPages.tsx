@@ -15,14 +15,21 @@ import { formatCDF, formatCDFPerDay } from '../utils/format';
 const schema = z
   .object({
     start_date: z.string().min(1, 'Date de début requise'),
+    start_time: z.string().min(1, 'Heure de début requise'),
     end_date: z.string().min(1, 'Date de fin requise'),
+    end_time: z.string().min(1, 'Heure de fin requise'),
   })
-  .refine((v) => v.end_date > v.start_date, {
+  .refine((v) => `${v.end_date}T${v.end_time}` > `${v.start_date}T${v.start_time}`, {
     path: ['end_date'],
-    message: 'La date de fin doit être après la date de début',
+    message: 'La fin doit être strictement après le début',
   });
 type Dates = z.infer<typeof schema>;
-const today = new Date().toISOString().slice(0, 10);
+const today = new Intl.DateTimeFormat('fr-CA', {
+  timeZone: 'Africa/Kinshasa',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+}).format(new Date());
 export function VehicleBookingPage() {
   const { id } = useParams();
   const vehicleId = Number(id);
@@ -39,17 +46,38 @@ export function VehicleBookingPage() {
     setError,
     formState: { errors, isSubmitting },
   } = useForm<Dates>({ resolver: zodResolver(schema) });
-  const [start, end] = watch(['start_date', 'end_date']);
+  const [start, startTime, end, endTime] = watch([
+    'start_date',
+    'start_time',
+    'end_date',
+    'end_time',
+  ]);
+  const validPeriod = Boolean(
+    start && startTime && end && endTime && `${end}T${endTime}` > `${start}T${startTime}`,
+  );
   const days = useMemo(
     () =>
-      start && end && end > start
-        ? Math.ceil((new Date(end).getTime() - new Date(start).getTime()) / 86400000) + 1
+      validPeriod
+        ? Math.max(
+            1,
+            Math.round(
+              (new Date(`${end}T00:00:00`).getTime() -
+                new Date(`${start}T00:00:00`).getTime()) /
+                86400000,
+            ) + 1,
+          )
         : 0,
-    [start, end],
+    [start, end, validPeriod],
   );
   const submit = async (v: Dates) => {
     try {
-      const availability = await dataService.availability(vehicleId, v.start_date, v.end_date);
+      const availability = await dataService.availability(
+        vehicleId,
+        v.start_date,
+        v.end_date,
+        v.start_time,
+        v.end_time,
+      );
       if (!availability.available) {
         setError('root', { message: 'Ce véhicule est déjà réservé sur cette période.' });
         return;
@@ -76,7 +104,7 @@ export function VehicleBookingPage() {
       <div className="mt-7 grid gap-7 lg:grid-cols-[1fr_1.2fr]">
         <aside className="card h-fit">
           <div className="grid h-52 place-items-center rounded-2xl bg-brand-50 dark:bg-slate-800">
-            {v.images?.[0] ? (
+            {v.images[0]?.image ? (
               <img
                 className="size-full rounded-2xl object-cover"
                 src={v.images[0].image}
@@ -98,7 +126,7 @@ export function VehicleBookingPage() {
           </p>
         </aside>
         <section className="card">
-          <h2 className="text-2xl font-bold">Choisissez vos dates</h2>
+          <h2 className="text-2xl font-bold">Choisissez vos dates et heures</h2>
           <p className="mt-2 text-sm text-slate-500">
             La disponibilité sera vérifiée avant la création.
           </p>
@@ -110,6 +138,11 @@ export function VehicleBookingPage() {
                 <small className="text-red-600">{errors.start_date?.message}</small>
               </label>
               <label className="label">
+                Heure de début
+                <input className="field mt-1" type="time" required {...register('start_time')} />
+                <small className="text-red-600">{errors.start_time?.message}</small>
+              </label>
+              <label className="label">
                 Fin
                 <input
                   className="field mt-1"
@@ -119,7 +152,18 @@ export function VehicleBookingPage() {
                 />
                 <small className="text-red-600">{errors.end_date?.message}</small>
               </label>
+              <label className="label">
+                Heure de fin
+                <input className="field mt-1" type="time" required {...register('end_time')} />
+                <small className="text-red-600">{errors.end_time?.message}</small>
+              </label>
             </div>
+            {validPeriod && (
+              <p className="rounded-xl bg-brand-50 p-3 text-sm text-brand-700">
+                Du {new Date(`${start}T${startTime}`).toLocaleString('fr-CD')} au{' '}
+                {new Date(`${end}T${endTime}`).toLocaleString('fr-CD')}
+              </p>
+            )}
             <div className="rounded-2xl bg-slate-50 p-5 dark:bg-slate-800">
               <div className="flex justify-between text-sm">
                 <span>Durée estimée</span>
@@ -137,7 +181,10 @@ export function VehicleBookingPage() {
               le serveur.
             </div>
             {errors.root && <p className="text-sm text-red-600">{errors.root.message}</p>}
-            <button className="btn-primary w-full !py-3.5" disabled={isSubmitting || !days}>
+            <button
+              className="btn-primary w-full !py-3.5"
+              disabled={isSubmitting || !validPeriod || !days}
+            >
               <CalendarDays size={18} />
               {isSubmitting ? 'Vérification…' : 'Confirmer la réservation'}
             </button>
@@ -199,8 +246,8 @@ export function BookingDetailPage() {
             {[
               ['Client', b.client_email],
               ['Agence', b.vehicle_detail.agency_name?.trim() || 'Agence Three-N Services'],
-              ['Début', new Date(b.start_date).toLocaleDateString('fr-FR')],
-              ['Fin', new Date(b.end_date).toLocaleDateString('fr-FR')],
+              ['Début', `${new Date(b.start_date).toLocaleDateString('fr-FR')} à ${b.start_time?.slice(0, 5) || 'heure non renseignée'}`],
+              ['Fin', `${new Date(b.end_date).toLocaleDateString('fr-FR')} à ${b.end_time?.slice(0, 5) || 'heure non renseignée'}`],
               ['Durée', `${b.duration_days} jour(s)`],
               ['Montant', formatCDF(Number(b.total_price))],
             ].map(([label, value]) => (

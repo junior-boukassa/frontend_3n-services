@@ -1,6 +1,6 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Car, MapPin, Plus, Search, Star, Trash2 } from 'lucide-react';
+import { Car, MapPin, Pencil, Plus, Search, Star, Trash2, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -10,12 +10,14 @@ import { dataService } from '../services';
 import { apiError } from '../api/client';
 import { EmptyState, ErrorState, Modal, PageLoader } from '../components/ui';
 import { formatCDFPerDay } from '../utils/format';
+import type { Vehicle } from '../types';
 
 export function VehiclesPage() {
   const { user } = useAuth();
   const qc = useQueryClient();
   const [search, setSearch] = useState('');
   const [modal, setModal] = useState(false);
+  const [editing, setEditing] = useState<Vehicle | null>(null);
   const q = useQuery({ queryKey: ['vehicles'], queryFn: () => dataService.vehicles() });
   const vehicles = useMemo(
     () =>
@@ -65,7 +67,7 @@ export function VehiclesPage() {
               key={v.id}
             >
               <div className="relative grid h-44 place-items-center bg-gradient-to-br from-slate-100 to-brand-50 dark:from-slate-800 dark:to-brand-900">
-                {v.images?.[0] ? (
+                {v.images[0]?.image ? (
                   <img
                     className="size-full object-cover"
                     src={v.images[0].image}
@@ -80,14 +82,24 @@ export function VehiclesPage() {
                   {v.status === 'AVAILABLE' ? 'Disponible' : v.status}
                 </span>
                 {canWrite && (user?.role === 'ADMIN' || v.owner === user?.id) && (
-                  <button
-                    onClick={() =>
-                      confirm('Supprimer définitivement ce véhicule ?') && del.mutate(v.id)
-                    }
-                    className="absolute right-3 top-3 rounded-lg bg-white p-2 text-red-600 opacity-0 shadow group-hover:opacity-100"
-                  >
-                    <Trash2 size={17} />
-                  </button>
+                  <div className="absolute right-3 top-3 flex gap-2 opacity-0 group-hover:opacity-100">
+                    <button
+                      onClick={() => setEditing(v)}
+                      className="rounded-lg bg-white p-2 text-brand-600 shadow"
+                      aria-label={`Modifier ${v.brand} ${v.model}`}
+                    >
+                      <Pencil size={17} />
+                    </button>
+                    <button
+                      onClick={() =>
+                        confirm('Supprimer définitivement ce véhicule ?') && del.mutate(v.id)
+                      }
+                      className="rounded-lg bg-white p-2 text-red-600 shadow"
+                      aria-label={`Supprimer ${v.brand} ${v.model}`}
+                    >
+                      <Trash2 size={17} />
+                    </button>
+                  </div>
                 )}
               </div>
               <div className="p-5">
@@ -129,6 +141,17 @@ export function VehiclesPage() {
           />
         </Modal>
       )}
+      {editing && (
+        <Modal title={`Modifier ${editing.brand} ${editing.model}`} onClose={() => setEditing(null)}>
+          <VehicleForm
+            vehicle={editing}
+            onDone={() => {
+              setEditing(null);
+              void qc.invalidateQueries({ queryKey: ['vehicles'] });
+            }}
+          />
+        </Modal>
+      )}
     </div>
   );
 }
@@ -150,7 +173,25 @@ const vehicleSchema = z.object({
   description: z.string(),
 });
 type VehicleFormData = z.infer<typeof vehicleSchema>;
-function VehicleForm({ onDone }: { onDone: () => void }) {
+function VehicleForm({ onDone, vehicle }: { onDone: () => void; vehicle?: Vehicle }) {
+  const { user } = useAuth();
+  const [ownerId, setOwnerId] = useState('');
+  const [files, setFiles] = useState<File[]>([]);
+  const [deletedImageIds, setDeletedImageIds] = useState<number[]>([]);
+  const previews = useMemo(
+    () => files.map((file) => ({ file, url: URL.createObjectURL(file) })),
+    [files],
+  );
+  useEffect(
+    () => () => {
+      previews.forEach(({ url }) => URL.revokeObjectURL(url));
+    },
+    [previews],
+  );
+  const existingImages = (vehicle?.images || []).filter(
+    (image) => image.image && !deletedImageIds.includes(image.id),
+  );
+  const imageCount = existingImages.length + files.length;
   const {
     register,
     handleSubmit,
@@ -158,24 +199,48 @@ function VehicleForm({ onDone }: { onDone: () => void }) {
   } = useForm<VehicleFormData>({
     resolver: zodResolver(vehicleSchema),
     defaultValues: {
+      brand: vehicle?.brand || '',
+      model: vehicle?.model || '',
+      year: vehicle?.year || new Date().getFullYear(),
+      registration_plate: vehicle?.registration_plate || '',
+      color: vehicle?.color || '',
+      daily_price: vehicle ? Number(vehicle.daily_price) : undefined,
       fuel_type: 'PETROL',
-      transmission: 'MANUAL',
-      description: '',
-      category: undefined,
-      seats: undefined,
+      transmission: vehicle?.transmission || 'MANUAL',
+      description: vehicle?.description || '',
+      category: vehicle?.category || undefined,
+      seats: vehicle?.seats || undefined,
+      ...(vehicle?.fuel_type ? { fuel_type: vehicle.fuel_type } : {}),
     },
   });
   const submit = async (v: VehicleFormData) => {
+    if (imageCount < 1 || imageCount > 3) {
+      toast.error('Sélectionnez entre 1 et 3 images.');
+      return;
+    }
     try {
-      await dataService.saveVehicle({
+      const data = new FormData();
+      Object.entries({
         ...v,
         daily_price: String(v.daily_price),
-        status: 'AVAILABLE',
-        has_gps: false,
-        has_baby_seat: false,
-        unlimited_mileage: false,
+        status: vehicle?.status || 'AVAILABLE',
+        has_gps: vehicle?.has_gps || false,
+        has_baby_seat: vehicle?.has_baby_seat || false,
+        unlimited_mileage: vehicle?.unlimited_mileage || false,
+      }).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== '') data.append(key, String(value));
       });
-      toast.success('Véhicule ajouté');
+      files.forEach((file) => data.append('images', file));
+      deletedImageIds.forEach((id) => data.append('delete_image_ids', String(id)));
+      if (!vehicle && user?.role === 'ADMIN') {
+        if (!ownerId) {
+          toast.error('Indiquez l’identifiant du compte agence propriétaire.');
+          return;
+        }
+        data.append('owner', ownerId);
+      }
+      await dataService.saveVehicle(data, vehicle?.id);
+      toast.success(vehicle ? 'Véhicule modifié' : 'Véhicule ajouté');
       onDone();
     } catch (error) {
       toast.error(apiError(error));
@@ -243,7 +308,79 @@ function VehicleForm({ onDone }: { onDone: () => void }) {
         Description
         <textarea className="field mt-1" {...register('description')} />
       </label>
-      <button className="btn-primary sm:col-span-2" disabled={isSubmitting}>
+      {!vehicle && user?.role === 'ADMIN' && (
+        <label className="label sm:col-span-2">
+          Identifiant du compte agence propriétaire
+          <input
+            className="field mt-1"
+            type="number"
+            min="1"
+            required
+            value={ownerId}
+            onChange={(event) => setOwnerId(event.target.value)}
+          />
+        </label>
+      )}
+      <section className="sm:col-span-2">
+        <div className="flex items-center justify-between">
+          <span className="label">Images du véhicule</span>
+          <b className={imageCount < 1 || imageCount > 3 ? 'text-red-600' : 'text-brand-600'}>
+            {imageCount}/3 images
+          </b>
+        </div>
+        <input
+          className="field mt-1"
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          multiple
+          onChange={(event) => {
+            const selected = Array.from(event.target.files || []);
+            if (imageCount + selected.length > 3) {
+              toast.error('Vous pouvez sélectionner au maximum 3 images.');
+              event.target.value = '';
+              return;
+            }
+            setFiles((current) => [...current, ...selected]);
+            event.target.value = '';
+          }}
+        />
+        <p className="mt-1 text-xs text-slate-500">JPEG, PNG ou WebP, 5 Mo maximum par image.</p>
+        <div className="mt-3 grid grid-cols-3 gap-3">
+          {existingImages.map((image) => (
+            <div className="relative overflow-hidden rounded-xl" key={image.id}>
+              <img className="h-24 w-full object-cover" src={image.image!} alt="Image existante" />
+              <button
+                type="button"
+                className="absolute right-1 top-1 rounded-full bg-white p-1 text-red-600 shadow"
+                onClick={() => {
+                  if (imageCount <= 1) return toast.error('Le véhicule doit conserver une image.');
+                  setDeletedImageIds((current) => [...current, image.id]);
+                }}
+                aria-label="Supprimer cette image"
+              >
+                <X size={15} />
+              </button>
+            </div>
+          ))}
+          {previews.map(({ file, url }, index) => (
+            <div className="relative overflow-hidden rounded-xl" key={`${file.name}-${index}`}>
+              <img className="h-24 w-full object-cover" src={url} alt={`Aperçu ${index + 1}`} />
+              <button
+                type="button"
+                className="absolute right-1 top-1 rounded-full bg-white p-1 text-red-600 shadow"
+                onClick={() => setFiles((current) => current.filter((_, i) => i !== index))}
+                aria-label="Retirer ce fichier"
+              >
+                <X size={15} />
+              </button>
+            </div>
+          ))}
+        </div>
+      </section>
+      <button
+        className="btn-primary sm:col-span-2"
+        disabled={isSubmitting || imageCount < 1 || imageCount > 3}
+      >
         {isSubmitting ? 'Enregistrement…' : 'Enregistrer'}
       </button>
     </form>

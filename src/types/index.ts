@@ -41,7 +41,7 @@ export interface Vehicle {
   average_rating: string | null;
   review_count: number;
   created_at: string;
-  images?: { id: number; image: string; caption: string }[];
+  images: { id: number; image: string | null; caption: string; order: number }[];
 }
 export interface Booking {
   id: number;
@@ -51,6 +51,8 @@ export interface Booking {
   client_email: string;
   start_date: string;
   end_date: string;
+  start_time: string | null;
+  end_time: string | null;
   duration_days: number;
   total_price: string;
   status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';

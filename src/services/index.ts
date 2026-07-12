@@ -41,12 +41,18 @@ export const dataService = {
   vehicles: async (params?: Record<string, string | number>) =>
     allPages<Vehicle>(endpoints.vehicles, params),
   vehicle: (id: number) => api.get<Vehicle>(`${endpoints.vehicles}${id}/`),
-  saveVehicle: (data: Partial<Vehicle>, id?: number) =>
+  saveVehicle: (data: FormData, id?: number) =>
     id ? api.patch(`${endpoints.vehicles}${id}/`, data) : api.post(endpoints.vehicles, data),
   deleteVehicle: (id: number) => api.delete(`${endpoints.vehicles}${id}/`),
   bookings: async () => allPages<Booking>(endpoints.bookings),
   booking: (id: number) => api.get<Booking>(`${endpoints.bookings}${id}/`).then((r) => r.data),
-  createBooking: (data: { vehicle_id: number; start_date: string; end_date: string }) =>
+  createBooking: (data: {
+    vehicle_id: number;
+    start_date: string;
+    end_date: string;
+    start_time: string;
+    end_time: string;
+  }) =>
     api.post(endpoints.bookings, data),
   bookingStatus: (id: number, status: Booking['status']) =>
     api.post(`${endpoints.bookings}${id}/set_status/`, { status }),
@@ -66,10 +72,16 @@ export const dataService = {
         params: { vehicle_id: vehicleId },
       })
       .then((r) => r.data),
-  availability: (vehicle_id: number, start: string, end: string) =>
+  availability: (
+    vehicle_id: number,
+    start: string,
+    end: string,
+    start_time: string,
+    end_time: string,
+  ) =>
     api
       .get<{ available: boolean }>(`${endpoints.bookings}availability_check/`, {
-        params: { vehicle_id, start, end },
+        params: { vehicle_id, start, end, start_time, end_time },
       })
       .then((r) => r.data),
   users: async () => allPages<User>(endpoints.auth.users),
