@@ -12,8 +12,11 @@ const LoginPage = named(() => import('./pages/auth/AuthPages'), 'LoginPage'),
   ForgotPage = named(() => import('./pages/auth/AuthPages'), 'ForgotPage');
 const DashboardPage = named(() => import('./pages/DashboardPage'), 'DashboardPage'),
   VehiclesPage = named(() => import('./pages/VehiclesPage'), 'VehiclesPage');
+const PricingRecommendationsPage = named(
+  () => import('./pages/PricingRecommendationsPage'),
+  'PricingRecommendationsPage',
+);
 const BookingsPage = named(() => import('./pages/DataPages'), 'BookingsPage'),
-  PaymentsPage = named(() => import('./pages/DataPages'), 'PaymentsPage'),
   ReviewsPage = named(() => import('./pages/DataPages'), 'ReviewsPage'),
   UsersPage = named(() => import('./pages/DataPages'), 'UsersPage'),
   LogsPage = named(() => import('./pages/DataPages'), 'LogsPage');
@@ -45,9 +48,7 @@ const ContactMessagesPage = named(
     'ContactMessageDetailPage',
   );
 const VehicleBookingPage = named(() => import('./pages/BookingFlowPages'), 'VehicleBookingPage'),
-  BookingDetailPage = named(() => import('./pages/BookingFlowPages'), 'BookingDetailPage'),
-  PaymentDemoPage = named(() => import('./pages/BookingFlowPages'), 'PaymentDemoPage'),
-  PaymentDetailPage = named(() => import('./pages/BookingFlowPages'), 'PaymentDetailPage');
+  BookingDetailPage = named(() => import('./pages/BookingFlowPages'), 'BookingDetailPage');
 function Protected() {
   const { user, loading } = useAuth();
   const loc = useLocation();
@@ -88,13 +89,10 @@ export default function App() {
         <Route element={<Protected />}>
           <Route element={<RoleRoute roles={['CLIENT']} />}>
             <Route path="/vehicles/:id/book" element={<VehicleBookingPage />} />
-            <Route path="/bookings/:id/payment" element={<PaymentDemoPage />} />
           </Route>
           <Route path="/bookings/:id" element={<BookingDetailPage />} />
-          <Route path="/payments/:id" element={<PaymentDetailPage />} />
           <Route path="/dashboard" element={<Navigate to="/app/dashboard" replace />} />
           <Route path="/bookings" element={<Navigate to="/app/bookings" replace />} />
-          <Route path="/payments" element={<Navigate to="/app/payments" replace />} />
           <Route path="/reviews" element={<Navigate to="/app/reviews" replace />} />
           <Route path="/profile" element={<Navigate to="/app/profile" replace />} />
           <Route path="/settings" element={<Navigate to="/app/settings" replace />} />
@@ -115,10 +113,6 @@ export default function App() {
             element={<RoleAlias roles={['AGENCY']} to="/app/bookings" />}
           />
           <Route
-            path="/agency/payments"
-            element={<RoleAlias roles={['AGENCY']} to="/app/payments" />}
-          />
-          <Route
             path="/agency/reviews"
             element={<RoleAlias roles={['AGENCY']} to="/app/reviews" />}
           />
@@ -134,10 +128,6 @@ export default function App() {
           <Route
             path="/admin/bookings"
             element={<RoleAlias roles={['ADMIN']} to="/app/bookings" />}
-          />
-          <Route
-            path="/admin/payments"
-            element={<RoleAlias roles={['ADMIN']} to="/app/payments" />}
           />
           <Route
             path="/admin/reviews"
@@ -158,8 +148,10 @@ export default function App() {
             <Route path="dashboard" element={<DashboardPage />} />
             <Route path="vehicles" element={<VehiclesPage />} />
             <Route path="bookings" element={<BookingsPage />} />
-            <Route path="payments" element={<PaymentsPage />} />
             <Route path="reviews" element={<ReviewsPage />} />
+            <Route element={<RoleRoute roles={['AGENCY', 'ADMIN']} />}>
+              <Route path="pricing" element={<PricingRecommendationsPage />} />
+            </Route>
             <Route path="profile" element={<ProfilePage />} />
             <Route path="settings" element={<SettingsPage />} />
             <Route path="help" element={<HelpPage />} />

@@ -11,7 +11,7 @@ import {
   Menu,
   Mail,
   Moon,
-  Receipt,
+  BrainCircuit,
   Star,
   Settings,
   Sun,
@@ -24,13 +24,13 @@ const labels: Record<string, string> = {
   dashboard: 'Tableau de bord',
   vehicles: 'Véhicules',
   bookings: 'Réservations',
-  payments: 'Paiements',
   reviews: 'Avis',
   users: 'Utilisateurs',
   logs: 'Journal d’activités',
   profile: 'Mon profil',
   settings: 'Paramètres',
   help: 'Centre d’aide',
+  pricing: 'Tarification intelligente',
 };
 export function AppLayout() {
   const { user, logout } = useAuth();
@@ -40,15 +40,33 @@ export function AppLayout() {
   const nav = useNavigate();
   const loc = useLocation();
   const items = [
-    ['/app/dashboard', 'Vue d’ensemble', LayoutDashboard],
+    [
+      '/app/dashboard',
+      user?.role === 'AGENCY'
+        ? 'Tableau de bord agence'
+        : user?.role === 'ADMIN'
+          ? 'Tableau de bord global'
+          : 'Tableau de bord',
+      LayoutDashboard,
+    ],
     [
       user?.role === 'CLIENT' ? '/vehicles' : '/app/vehicles',
-      user?.role === 'CLIENT' ? 'Catalogue' : 'Véhicules',
+      user?.role === 'CLIENT' ? 'Véhicules' : user?.role === 'AGENCY' ? 'Mes véhicules' : 'Véhicules',
       Car,
     ],
-    ['/app/bookings', 'Réservations', CalendarDays],
-    ['/app/payments', 'Paiements', Receipt],
-    ['/app/reviews', 'Avis clients', Star],
+    [
+      '/app/bookings',
+      user?.role === 'CLIENT' ? 'Mes réservations' : user?.role === 'AGENCY' ? 'Réservations reçues' : 'Réservations',
+      CalendarDays,
+    ],
+    [
+      '/app/reviews',
+      user?.role === 'CLIENT' ? 'Mes avis' : user?.role === 'AGENCY' ? 'Avis de mes véhicules' : 'Avis',
+      Star,
+    ],
+    ...(user?.role === 'AGENCY' || user?.role === 'ADMIN'
+      ? ([['/app/pricing', 'Tarification intelligente', BrainCircuit]] as const)
+      : []),
     ...(user?.role === 'ADMIN'
       ? ([
           ['/app/users', 'Utilisateurs', Users],

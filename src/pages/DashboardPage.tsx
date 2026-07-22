@@ -18,12 +18,18 @@ const names: Record<string, string> = {
   suspended_users_count: 'Comptes suspendus',
   total_bookings: 'Réservations',
   active_bookings: 'Réservations actives',
+  pending_bookings: 'En attente',
+  confirmed_bookings: 'Confirmées',
+  completed_bookings: 'Terminées',
+  payments_count: 'Mes paiements',
   historical_bookings: 'Locations terminées',
   total_spent: 'Total dépensé',
   vehicles_available: 'Disponibles',
   vehicles_reserved: 'Réservés',
   revenue_generated: 'Revenu généré',
   bookings_received: 'Demandes reçues',
+  payments_received: 'Paiements reçus',
+  reviews_received: 'Avis reçus',
   occupancy_rate: 'Taux d’occupation',
 };
 export function DashboardPage() {

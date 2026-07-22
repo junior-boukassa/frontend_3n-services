@@ -1,16 +1,16 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, CalendarDays, Car, CreditCard, Info } from 'lucide-react';
+import { ArrowLeft, CalendarDays, Car, Info } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { apiError } from '../api/client';
 import { ErrorState, PageLoader } from '../components/ui';
 import { dataService } from '../services';
 import { useAuth } from '../contexts/AuthContext';
-import type { Booking, Payment } from '../types';
+import type { Booking } from '../types';
 import { formatCDF, formatCDFPerDay } from '../utils/format';
 const schema = z
   .object({
@@ -209,7 +209,6 @@ export function BookingDetailPage() {
     queryKey: ['booking', bookingId],
     queryFn: () => dataService.booking(bookingId),
   });
-  const payments = useQuery({ queryKey: ['payments'], queryFn: dataService.payments });
   const action = useMutation({
     mutationFn: (status: Booking['status']) =>
       status === 'CANCELLED' && user?.role === 'CLIENT'
@@ -224,7 +223,6 @@ export function BookingDetailPage() {
   if (q.isLoading) return <PageLoader />;
   if (q.error) return <ErrorState message={apiError(q.error)} />;
   const b = q.data!;
-  const payment = payments.data?.find((p) => p.booking === b.id);
   return (
     <main className="mx-auto max-w-5xl px-6 py-12">
       <Link className="inline-flex items-center gap-2 text-sm text-slate-500" to="/app/bookings">
@@ -239,8 +237,8 @@ export function BookingDetailPage() {
         </div>
         <span className={`badge ${badge(b.status)}`}>{b.status}</span>
       </div>
-      <div className="mt-7 grid gap-6 lg:grid-cols-3">
-        <section className="card lg:col-span-2">
+      <div className="mt-7">
+        <section className="card">
           <h2 className="font-bold">Détails de la location</h2>
           <dl className="mt-5 grid gap-5 sm:grid-cols-2">
             {[
@@ -258,26 +256,6 @@ export function BookingDetailPage() {
             ))}
           </dl>
         </section>
-        <aside className="card h-fit">
-          <h2 className="font-bold">Paiement</h2>
-          {payment ? (
-            <>
-              <span className={`badge mt-4 ${badge(payment.status)}`}>{payment.status}</span>
-              <Link className="btn-secondary mt-4 w-full" to={`/payments/${payment.id}`}>
-                Voir le paiement
-              </Link>
-            </>
-          ) : b.status !== 'CANCELLED' ? (
-            <>
-              <p className="mt-3 text-sm text-slate-500">Aucun paiement initialisé.</p>
-              <Link className="btn-primary mt-4 w-full" to={`/bookings/${b.id}/payment`}>
-                Procéder à la démo
-              </Link>
-            </>
-          ) : (
-            <p className="mt-3 text-sm text-slate-500">Réservation annulée.</p>
-          )}
-        </aside>
       </div>
       <div className="mt-6 flex flex-wrap gap-3">
         {user?.role === 'CLIENT' && b.status === 'PENDING' && (
@@ -299,121 +277,6 @@ export function BookingDetailPage() {
           </button>
         )}
       </div>
-    </main>
-  );
-}
-export function PaymentDemoPage() {
-  const { id } = useParams();
-  const bookingId = Number(id);
-  const nav = useNavigate();
-  const qc = useQueryClient();
-  const booking = useQuery({
-    queryKey: ['booking', bookingId],
-    queryFn: () => dataService.booking(bookingId),
-  });
-  const [method, setMethod] = useState<Payment['method']>('MOBILE_MONEY');
-  const create = useMutation({
-    mutationFn: async () => {
-      const b = booking.data!;
-      const p = await dataService.createPayment({
-        booking_id: b.id,
-        method,
-        amount: b.total_price,
-      });
-      return dataService.confirmPayment(p.data.id);
-    },
-    onSuccess: (r) => {
-      toast.success('Paiement de démonstration confirmé');
-      void qc.invalidateQueries({ queryKey: ['payments'] });
-      nav(`/payments/${r.data.id}`);
-    },
-    onError: (e) => toast.error(apiError(e)),
-  });
-  if (booking.isLoading) return <PageLoader />;
-  if (booking.error) return <ErrorState message={apiError(booking.error)} />;
-  const b = booking.data!;
-  return (
-    <main className="mx-auto max-w-2xl px-6 py-12">
-      <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-amber-900">
-        <h1 className="flex items-center gap-2 text-xl font-bold">
-          <Info /> Paiement de démonstration
-        </h1>
-        <p className="mt-2 text-sm">
-          Aucune transaction bancaire réelle ne sera effectuée. Le backend simule uniquement le
-          changement de statut.
-        </p>
-      </div>
-      <section className="card mt-6">
-        <h2 className="text-xl font-bold">Réservation #{b.id}</h2>
-        <p className="mt-2 text-slate-500">
-          {b.vehicle_detail.brand} {b.vehicle_detail.model}
-        </p>
-        <p className="mt-6 text-3xl font-black text-brand-600">
-          {formatCDF(Number(b.total_price))}
-        </p>
-        <label className="label mt-6">
-          Méthode indicative
-          <select
-            className="field mt-1"
-            value={method}
-            onChange={(e) => setMethod(e.target.value as Payment['method'])}
-          >
-            <option value="MOBILE_MONEY">Mobile Money — simulation</option>
-            <option value="CARD">Carte — simulation</option>
-            <option value="CASH">Espèces — simulation</option>
-          </select>
-        </label>
-        <button
-          className="btn-primary mt-5 w-full"
-          disabled={create.isPending}
-          onClick={() => create.mutate()}
-        >
-          <CreditCard size={18} />
-          {create.isPending ? 'Confirmation…' : 'Confirmer le paiement de démonstration'}
-        </button>
-      </section>
-    </main>
-  );
-}
-export function PaymentDetailPage() {
-  const { id } = useParams();
-  const paymentId = Number(id);
-  const q = useQuery({
-    queryKey: ['payment', paymentId],
-    queryFn: () => dataService.payment(paymentId),
-  });
-  if (q.isLoading) return <PageLoader />;
-  if (q.error) return <ErrorState message={apiError(q.error)} />;
-  const p = q.data!;
-  return (
-    <main className="mx-auto max-w-3xl px-6 py-12">
-      <Link className="text-sm text-slate-500" to="/app/payments">
-        ← Tous les paiements
-      </Link>
-      <section className="card mt-6">
-        <div className="flex justify-between">
-          <div>
-            <p className="text-sm text-slate-500">Paiement</p>
-            <h1 className="text-3xl font-black">#{p.id}</h1>
-          </div>
-          <span className={`badge h-fit ${badge(p.status)}`}>{p.status}</span>
-        </div>
-        <dl className="mt-8 grid gap-6 sm:grid-cols-2">
-          {[
-            ['Réservation', `#${p.booking}`],
-            ['Véhicule', p.booking_vehicle],
-            ['Montant', formatCDF(Number(p.amount))],
-            ['Méthode', p.method.replace('_', ' ')],
-            ['Référence', p.transaction_reference || 'Non attribuée'],
-            ['Date', new Date(p.created_at).toLocaleString('fr-FR')],
-          ].map(([l, v]) => (
-            <div key={l}>
-              <dt className="text-xs text-slate-400">{l}</dt>
-              <dd className="mt-1 font-semibold">{v}</dd>
-            </div>
-          ))}
-        </dl>
-      </section>
     </main>
   );
 }

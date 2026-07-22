@@ -164,6 +164,23 @@ export function HomePage() {
           </Link>
         </div>
       </section>
+      <section className="border-t bg-white py-20 dark:border-slate-800 dark:bg-slate-900">
+        <div className="mx-auto max-w-7xl px-6 text-center">
+          <p className="text-sm font-bold uppercase tracking-widest text-brand-600">
+            Un réseau de confiance
+          </p>
+          <h2 className="mt-2 text-3xl font-bold">Nos partenaires</h2>
+          <p className="mx-auto mt-3 max-w-2xl text-slate-500">
+            Nous collaborons avec des organisations engagées pour proposer une mobilité fiable et
+            accessible.
+          </p>
+          <div className="mx-auto mt-10 max-w-3xl rounded-2xl border border-dashed border-brand-200 bg-brand-50/50 px-6 py-10 transition hover:border-brand-400 dark:border-slate-700 dark:bg-slate-800/50">
+            <p className="font-semibold text-slate-600 dark:text-slate-300">
+              Nos partenaires seront bientôt présentés ici.
+            </p>
+          </div>
+        </div>
+      </section>
     </main>
   );
 }

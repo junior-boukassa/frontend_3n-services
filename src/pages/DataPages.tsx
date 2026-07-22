@@ -231,57 +231,6 @@ function BookingForm({ onDone }: { onDone: () => void }) {
     </form>
   );
 }
-export function PaymentsPage() {
-  const qc = useQueryClient();
-  const q = useQuery({ queryKey: ['payments'], queryFn: dataService.payments });
-  const confirmPayment = useMutation({
-    mutationFn: dataService.confirmPayment,
-    onSuccess: () => {
-      toast.success('Paiement confirmé');
-      void qc.invalidateQueries({ queryKey: ['payments'] });
-    },
-    onError: (e) => toast.error(apiError(e)),
-  });
-  if (q.isLoading) return <PageLoader />;
-  if (q.error) return <ErrorState message={apiError(q.error)} />;
-  if (!q.data?.length)
-    return (
-      <EmptyState
-        title="Aucun paiement"
-        description="Les paiements associés à vos réservations apparaîtront ici."
-      />
-    );
-  return (
-    <Table
-      headers={['Référence', 'Réservation', 'Véhicule', 'Méthode', 'Montant', 'Statut', 'Action']}
-      rows={q.data.map((p) => [
-        <Link className="font-bold text-brand-600" to={`/payments/${p.id}`}>
-          #{p.id}
-        </Link>,
-        <Link className="text-brand-600" to={`/bookings/${p.booking}`}>
-          #{p.booking}
-        </Link>,
-        p.booking_vehicle,
-        p.method.replace('_', ' '),
-        formatCDF(Number(p.amount)),
-        <span className={`badge ${badge(p.status)}`}>{statusLabel[p.status]}</span>,
-        p.status === 'PENDING' ? (
-          <button
-            className="btn-primary !px-3 !py-2"
-            onClick={() =>
-              confirm('Confirmer ce paiement via le mécanisme prototype du backend ?') &&
-              confirmPayment.mutate(p.id)
-            }
-          >
-            Confirmer
-          </button>
-        ) : (
-          '—'
-        ),
-      ])}
-    />
-  );
-}
 export function ReviewsPage() {
   const q = useQuery({ queryKey: ['reviews'], queryFn: dataService.reviews });
   if (q.isLoading) return <PageLoader />;

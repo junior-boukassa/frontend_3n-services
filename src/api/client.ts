@@ -1,5 +1,5 @@
 import axios from 'axios';
-const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8001/api';
+const baseURL = import.meta.env.VITE_API_BASE_URL || '/api';
 export const tokenStore = {
   getAccess: () => sessionStorage.getItem('access_token'),
   getRefresh: () => localStorage.getItem('refresh_token'),

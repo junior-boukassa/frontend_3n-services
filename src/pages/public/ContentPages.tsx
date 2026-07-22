@@ -141,11 +141,6 @@ const faqs = [
     'Une réservation en attente peut être annulée par son client. Les autres statuts nécessitent une intervention autorisée.',
   ],
   [
-    'Paiement',
-    'Le paiement est-il réel ?',
-    'Non. Le backend actuel propose uniquement une confirmation de démonstration, clairement identifiée.',
-  ],
-  [
     'Avis',
     'Qui peut publier un avis ?',
     'Seul le client d’une réservation terminée et sans avis existant peut en publier un.',
@@ -224,7 +219,7 @@ export function PrivacyPage() {
       sections={[
         [
           'Données collectées',
-          'Identité, coordonnées, profil, réservations, paiements de démonstration, avis, adresses IP et journaux d’activité.',
+          'Identité, coordonnées, profil, réservations, références de paiement, avis, adresses IP et journaux d’activité. Les données de carte ne transitent pas par 3N Services.',
         ],
         [
           'Finalités',

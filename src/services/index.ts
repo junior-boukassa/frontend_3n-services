@@ -4,7 +4,6 @@ import type {
   ActivityLog,
   Booking,
   Paginated,
-  Payment,
   Review,
   PublicReview,
   Role,
@@ -14,6 +13,8 @@ import type {
   ContactMessage,
   ContactStatus,
   PublicGlobalReview,
+  PricingRecommendation,
+  PricingClient,
 } from '../types';
 async function allPages<T>(url: string, params?: Record<string, string | number>): Promise<T[]> {
   const first = (await api.get<Paginated<T> | T[]>(url, { params })).data;
@@ -57,12 +58,6 @@ export const dataService = {
   bookingStatus: (id: number, status: Booking['status']) =>
     api.post(`${endpoints.bookings}${id}/set_status/`, { status }),
   cancelBooking: (id: number) => api.post(`${endpoints.bookings}${id}/cancel/`),
-  payments: async () => allPages<Payment>(endpoints.payments),
-  payment: (id: number) => api.get<Payment>(`${endpoints.payments}${id}/`).then((r) => r.data),
-  createPayment: (data: { booking_id: number; method: Payment['method']; amount: string }) =>
-    api.post(endpoints.payments, data),
-  confirmPayment: (id: number) =>
-    api.post(`${endpoints.payments}${id}/confirm/`, { simulate_success: true }),
   reviews: async () => allPages<Review>(endpoints.reviews),
   createReview: (data: { booking: number; rating: number; comment: string }) =>
     api.post(endpoints.reviews, data),
@@ -107,4 +102,60 @@ export const contactService = {
 export const publicReviewService = {
   list: (params?: Record<string, string | number>) =>
     allPages<PublicGlobalReview>(`${endpoints.reviews}public/`, params),
+};
+
+export interface PricingRecommendationRequest {
+  vehicle_id: number;
+  booking_id?: number;
+  client_id?: number;
+  start_date?: string;
+  end_date?: string;
+}
+
+export interface PricingFilters {
+  page?: number;
+  vehicle?: number;
+  status?: string;
+  technical_status?: string;
+  date_min?: string;
+  date_max?: string;
+  agency?: number;
+}
+
+export const pricingService = {
+  list: (filters: PricingFilters = {}) =>
+    api
+      .get<Paginated<PricingRecommendation>>(endpoints.pricingRecommendations, {
+        params: filters,
+      })
+      .then((response) => response.data),
+  detail: (id: string) =>
+    api
+      .get<PricingRecommendation>(`${endpoints.pricingRecommendations}${id}/`)
+      .then((response) => response.data),
+  create: (data: PricingRecommendationRequest) =>
+    api
+      .post<PricingRecommendation>(endpoints.pricingRecommendations, data)
+      .then((response) => response.data),
+  accept: (id: string) =>
+    api
+      .post<PricingRecommendation>(`${endpoints.pricingRecommendations}${id}/accept/`)
+      .then((response) => response.data),
+  modify: (id: string, daily_price: string, reason: string) =>
+    api
+      .post<PricingRecommendation>(`${endpoints.pricingRecommendations}${id}/modify/`, {
+        daily_price,
+        reason,
+      })
+      .then((response) => response.data),
+  reject: (id: string, reason: string) =>
+    api
+      .post<PricingRecommendation>(`${endpoints.pricingRecommendations}${id}/reject/`, { reason })
+      .then((response) => response.data),
+  clients: (page = 1, search = '') =>
+    api
+      .get<Paginated<PricingClient>>(endpoints.pricingClients, {
+        params: { page, ...(search.trim() ? { search: search.trim() } : {}) },
+      })
+      .then((response) => response.data),
 };

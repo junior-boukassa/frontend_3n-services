@@ -90,8 +90,9 @@ export function LoginPage() {
     <Shell title="Ravi de vous revoir" subtitle="Connectez-vous pour accéder à votre espace.">
       <form onSubmit={handleSubmit(submit)} className="space-y-5">
         <div>
-          <label className="label">Adresse e-mail</label>
+          <label className="label" htmlFor="login-email">Adresse e-mail</label>
           <input
+            id="login-email"
             className="field"
             type="email"
             placeholder="vous@entreprise.com"
@@ -101,13 +102,14 @@ export function LoginPage() {
         </div>
         <div>
           <div className="flex justify-between">
-            <label className="label">Mot de passe</label>
+            <label className="label" htmlFor="login-password">Mot de passe</label>
             <Link className="text-sm text-brand-600" to="/forgot-password">
               Mot de passe oublié ?
             </Link>
           </div>
           <div className="relative">
             <input
+              id="login-password"
               className="field pr-11"
               type={show ? 'text' : 'password'}
               {...register('password')}
