@@ -83,15 +83,16 @@ export function PublicLayout() {
             {open ? <X /> : <Menu />}
           </button>
         </div>
+      </header>
         <div
-          className={`fixed inset-0 top-16 z-40 bg-slate-950/50 backdrop-blur-sm transition-opacity lg:hidden ${
+          className={`fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-[2px] transition-opacity duration-300 lg:hidden ${
             open ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
           }`}
           onClick={() => setOpen(false)}
           aria-hidden="true"
         />
         <aside
-          className={`fixed bottom-0 right-0 top-0 z-50 flex w-[min(22rem,88vw)] flex-col bg-white shadow-2xl transition-transform duration-300 dark:bg-slate-950 lg:hidden ${
+          className={`fixed inset-y-0 right-0 z-50 flex w-[min(22rem,88vw)] flex-col bg-white shadow-2xl transition-transform duration-300 ease-out dark:bg-slate-950 lg:hidden ${
             open ? 'translate-x-0' : 'translate-x-full'
           }`}
           aria-hidden={!open}
@@ -148,7 +149,6 @@ export function PublicLayout() {
             </div>
           </div>
         </aside>
-      </header>
       <Outlet />
       <PublicFooter />
     </div>

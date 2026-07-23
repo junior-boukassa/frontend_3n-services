@@ -1,7 +1,6 @@
 import {
   ArrowRight,
   CalendarCheck,
-  Car,
   CheckCircle2,
   Search,
   ShieldCheck,
@@ -119,76 +118,111 @@ export function HomePage() {
           </div>
         </div>
       </section>
-      <section className="bg-white py-20 dark:bg-slate-900">
+      <section className="bg-slate-100 py-16 dark:bg-night-900 sm:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <div className="text-center">
-            <p className="text-sm font-bold uppercase tracking-widest text-brand-600">
-              Pourquoi 3N Services ?
-            </p>
-            <h2 className="mt-2 text-3xl font-bold">La location automobile en toute confiance</h2>
-          </div>
-          <div className="mt-10 grid gap-5 md:grid-cols-3">
-            {[
-              [
-                ShieldCheck,
-                'Agences identifiées',
-                'Consultez clairement le propriétaire et la localisation de chaque véhicule.',
-              ],
-              [
-                CalendarCheck,
-                'Disponibilité vérifiée',
-                'Les conflits de dates sont contrôlés directement par notre API.',
-              ],
-              [
-                CheckCircle2,
-                'Parcours guidé',
-                'Les détails, le paiement et la confirmation sont présentés étape par étape.',
-              ],
-            ].map(([Icon, title, text]) => (
-              <div className="card" key={title as string}>
-                <Icon className="text-brand-600" size={30} />
-                <h3 className="mt-5 text-lg font-bold">{title as string}</h3>
-                <p className="mt-2 text-sm leading-6 text-slate-500">{text as string}</p>
+          <div className="grid overflow-hidden rounded-[2rem] bg-white shadow-2xl shadow-brand-900/10 dark:bg-night-800 lg:grid-cols-[.9fr_1.1fr]">
+            <div className="relative overflow-hidden bg-gradient-to-br from-night-950 via-brand-900 to-brand-600 p-7 text-white sm:p-10 lg:p-12">
+              <div className="absolute -right-24 -top-20 size-72 rounded-full bg-brand-500/30 blur-3xl" />
+              <div className="relative">
+                <p className="text-xs font-bold uppercase tracking-[.22em] text-brand-200">
+                  L’expérience 3N
+                </p>
+                <h2 className="mt-4 max-w-md text-3xl font-black leading-tight sm:text-4xl">
+                  Louez avec plus de clarté, moins de complications.
+                </h2>
+                <p className="mt-5 max-w-md leading-7 text-white/65">
+                  Des agences identifiées, des disponibilités contrôlées et un parcours conçu
+                  pour vous accompagner jusqu’à la confirmation.
+                </p>
+                <div className="mt-10 grid grid-cols-2 gap-3">
+                  <div className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur">
+                    <ShieldCheck size={24} className="text-brand-200" />
+                    <p className="mt-3 text-sm font-bold">Paiement vérifié</p>
+                  </div>
+                  <div className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur">
+                    <CalendarCheck size={24} className="text-brand-200" />
+                    <p className="mt-3 text-sm font-bold">Réservation guidée</p>
+                  </div>
+                </div>
               </div>
+            </div>
+            <div className="p-6 sm:p-10 lg:p-12">
+              <p className="text-xs font-bold uppercase tracking-[.2em] text-brand-600">
+                Pourquoi nous choisir
+              </p>
+              <div className="mt-6 divide-y">
+                {[
+                  [
+                    ShieldCheck,
+                    'Agences clairement identifiées',
+                    'Le propriétaire et la localisation sont visibles sur chaque offre.',
+                  ],
+                  [
+                    CalendarCheck,
+                    'Disponibilité contrôlée en temps réel',
+                    'Les dates sont vérifiées avant la création de votre réservation.',
+                  ],
+                  [
+                    CheckCircle2,
+                    'Confirmation sans ambiguïté',
+                    'Le statut du paiement et les détails restent accessibles dans votre espace.',
+                  ],
+                ].map(([Icon, title, text], index) => (
+                  <article className="group flex gap-4 py-6 first:pt-0 last:pb-0" key={title as string}>
+                    <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-brand-50 text-brand-600 transition group-hover:bg-brand-600 group-hover:text-white dark:bg-brand-900">
+                      <Icon size={22} />
+                    </span>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-black text-brand-500">0{index + 1}</span>
+                        <h3 className="font-black">{title as string}</h3>
+                      </div>
+                      <p className="mt-2 text-sm leading-6 text-slate-500">{text as string}</p>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="relative mx-3 -mt-1 grid overflow-hidden rounded-b-[2rem] border border-t-0 bg-white shadow-xl dark:bg-night-800 md:mx-8 md:grid-cols-3">
+            {[
+              [Search, 'Recherchez', 'Filtrez selon votre budget et vos besoins.'],
+              [CalendarCheck, 'Réservez', 'Sélectionnez simplement vos dates.'],
+              [CheckCircle2, 'Prenez la route', 'Suivez la confirmation depuis votre espace.'],
+            ].map(([Icon, title, text], index) => (
+              <article
+                className="relative flex gap-4 border-b p-5 last:border-b-0 md:border-b-0 md:border-r md:last:border-r-0 sm:p-6"
+                key={title as string}
+              >
+                <span className="grid size-10 shrink-0 place-items-center rounded-full bg-ink text-sm font-black text-white dark:bg-brand-600">
+                  {index + 1}
+                </span>
+                <div>
+                  <h3 className="font-black">{title as string}</h3>
+                  <p className="mt-1 text-sm leading-5 text-slate-500">{text as string}</p>
+                </div>
+                <Icon className="absolute right-4 top-4 text-brand-500/15" size={36} />
+              </article>
             ))}
           </div>
         </div>
       </section>
-      <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20">
-        <div className="grid gap-8 lg:grid-cols-3">
-          {[
-            [Search, '1. Recherchez', 'Explorez les véhicules selon votre budget et vos besoins.'],
-            [
-              CalendarCheck,
-              '2. Réservez',
-              'Choisissez vos dates et obtenez immédiatement le montant estimé.',
-            ],
-            [
-              CheckCircle2,
-              '3. Prenez la route',
-              'Suivez votre réservation et son paiement depuis votre espace.',
-            ],
-          ].map(([Icon, title, text]) => (
-            <div className="flex gap-4" key={title as string}>
-              <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-brand-50 text-brand-600 dark:bg-slate-800">
-                <Icon />
-              </span>
-              <div>
-                <h3 className="font-bold">{title as string}</h3>
-                <p className="mt-2 text-sm leading-6 text-slate-500">{text as string}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
       <section className="mx-auto max-w-7xl px-4 pb-14 sm:px-6 sm:pb-20">
-        <div className="rounded-3xl bg-brand-700 px-4 py-10 text-center text-white sm:px-8 sm:py-12">
-          <Car className="mx-auto" size={42} />
-          <h2 className="mt-5 text-3xl font-bold">Prêt à trouver votre prochain véhicule ?</h2>
-          <p className="mx-auto mt-3 max-w-xl text-brand-100">
-            Parcourez les offres réellement disponibles et réservez en quelques étapes.
-          </p>
-          <Link className="btn mt-7 bg-white text-brand-700" to="/vehicles">
+        <div className="relative flex flex-col justify-between gap-7 overflow-hidden rounded-[2rem] bg-night-950 px-6 py-9 text-white sm:px-10 sm:py-10 lg:flex-row lg:items-center">
+          <div className="absolute -right-20 -top-24 size-64 rounded-full bg-brand-500/30 blur-3xl" />
+          <div className="relative">
+            <p className="text-xs font-bold uppercase tracking-[.2em] text-brand-200">
+              Votre prochain trajet commence ici
+            </p>
+            <h2 className="mt-2 text-2xl font-black sm:text-3xl">
+              Trouvez un véhicule disponible à Kinshasa.
+            </h2>
+            <p className="mt-2 text-sm text-white/55">
+              Comparez les offres et réservez au tarif de démonstration.
+            </p>
+          </div>
+          <Link className="btn relative w-fit bg-white !px-6 !py-3 text-brand-900" to="/vehicles">
             Explorer le catalogue <ArrowRight size={18} />
           </Link>
         </div>
