@@ -428,6 +428,17 @@ export function VehicleBookingPage() {
               <Link className="btn-primary mt-6 w-full" to={`/bookings/${booking.id}`}>
                 Voir les détails de la réservation
               </Link>
+              <button
+                className="btn-secondary mt-3 w-full"
+                onClick={() =>
+                  void dataService
+                    .downloadBookingPdf(booking.id)
+                    .then(() => toast.success('Ticket PDF téléchargé'))
+                    .catch((error) => toast.error(apiError(error)))
+                }
+              >
+                <Download size={17} /> Télécharger mon ticket PDF
+              </button>
             </div>
           )}
         </section>
@@ -507,6 +518,7 @@ export function BookingDetailPage() {
   if (q.isLoading) return <PageLoader />;
   if (q.error) return <ErrorState message={apiError(q.error)} />;
   const b = q.data!;
+  const hasSuccessfulPayment = b.payments.some((payment) => payment.status === 'PAID');
   return (
     <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
       <Link className="inline-flex items-center gap-2 text-sm text-slate-500" to="/app/bookings">
@@ -600,24 +612,30 @@ export function BookingDetailPage() {
         )}
       </section>
       <div className="mt-6 flex flex-wrap gap-3">
-        <button
-          className="btn-secondary"
-          disabled={downloading}
-          onClick={async () => {
-            setDownloading(true);
-            try {
-              await dataService.downloadBookingPdf(b.id);
-              toast.success('PDF téléchargé');
-            } catch (error) {
-              toast.error(apiError(error));
-            } finally {
-              setDownloading(false);
-            }
-          }}
-        >
-          <Download size={17} />
-          {downloading ? 'Préparation du PDF…' : 'Télécharger le PDF'}
-        </button>
+        {(user?.role !== 'CLIENT' || hasSuccessfulPayment) && (
+          <button
+            className="btn-secondary"
+            disabled={downloading}
+            onClick={async () => {
+              setDownloading(true);
+              try {
+                await dataService.downloadBookingPdf(b.id);
+                toast.success('PDF téléchargé');
+              } catch (error) {
+                toast.error(apiError(error));
+              } finally {
+                setDownloading(false);
+              }
+            }}
+          >
+            <Download size={17} />
+            {downloading
+              ? 'Préparation du PDF…'
+              : user?.role === 'CLIENT'
+                ? 'Télécharger mon ticket PDF'
+                : 'Télécharger le récapitulatif PDF'}
+          </button>
+        )}
         {user?.role !== 'CLIENT' && b.status === 'PENDING' && (
           <button className="btn-primary" onClick={() => action.mutate('CONFIRMED')}>
             Confirmer

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Check, Plus, Search } from 'lucide-react';
+import { Check, Download, Eye, Plus, Search } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -103,6 +103,27 @@ export function BookingsPage() {
             formatCDF(Number(b.total_price)),
             <span className={`badge ${badge(b.status)}`}>{statusLabel[b.status]}</span>,
             <div className="flex gap-2">
+              <Link
+                className="btn-secondary !px-3"
+                to={`/bookings/${b.id}`}
+                title="Voir tous les détails"
+              >
+                <Eye size={16} /> Détails
+              </Link>
+              {user?.role === 'CLIENT' && b.payments.some((payment) => payment.status === 'PAID') && (
+                <button
+                  className="btn-secondary !p-2 text-brand-600"
+                  title="Télécharger le ticket PDF"
+                  onClick={() =>
+                    void dataService
+                      .downloadBookingPdf(b.id)
+                      .then(() => toast.success('Ticket PDF téléchargé'))
+                      .catch((error) => toast.error(apiError(error)))
+                  }
+                >
+                  <Download size={16} />
+                </button>
+              )}
               {user?.role !== 'CLIENT' && b.status === 'PENDING' && (
                 <button
                   className="btn-secondary !p-2 text-emerald-600"
