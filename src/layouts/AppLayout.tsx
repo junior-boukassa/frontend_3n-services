@@ -20,6 +20,7 @@ import {
   X,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { BrandLogo } from '../components/BrandLogo';
 const labels: Record<string, string> = {
   dashboard: 'Tableau de bord',
   vehicles: 'Véhicules',
@@ -90,12 +91,10 @@ export function AppLayout() {
         className={`fixed inset-y-0 left-0 z-40 flex w-[min(18rem,86vw)] flex-col bg-ink text-white transition-all lg:w-auto ${collapsed ? 'lg:w-20' : 'lg:w-64'} ${open ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
       >
         <div className={`flex h-24 items-center px-4 ${collapsed ? 'justify-center' : ''}`}>
-          <img
-            className={`rounded-2xl bg-white object-contain shadow-lg shadow-brand-900/20 ${
+          <BrandLogo
+            className={`rounded-2xl shadow-lg shadow-brand-900/20 ${
               collapsed ? 'size-11' : 'h-16 w-28'
             }`}
-            src="/favicon.png"
-            alt="Three-N Services"
           />
           <button className="ml-auto lg:hidden" onClick={() => setOpen(false)}>
             <X />

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { LogOut, Menu, Moon, Sun, X } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { BrandLogo } from '../BrandLogo';
 const links = [
   ['/', 'Accueil'],
   ['/vehicles', 'Véhicules'],
@@ -31,8 +32,8 @@ export function PublicLayout() {
     <div className="min-h-screen">
       <header className="sticky top-0 z-40 border-b bg-white/90 backdrop-blur-xl dark:bg-slate-950/90">
         <div className="mx-auto flex h-16 max-w-7xl items-center px-4 sm:h-20 sm:px-6">
-          <Link to="/" className="flex items-center gap-3 font-black tracking-wide">
-            <span className="text-xl leading-none text-brand-900 dark:text-white">three-<b className="text-brand-500">N</b><small className="mt-1 block text-[8px] tracking-[.35em]">SERVICES</small></span>
+          <Link to="/" aria-label="Accueil Three-N Services">
+            <BrandLogo className="h-12 w-32" />
           </Link>
           <nav className="ml-10 hidden items-center gap-1 lg:flex">
             {links.map(([to, label]) => (
@@ -98,11 +99,8 @@ export function PublicLayout() {
           aria-hidden={!open}
         >
           <div className="flex h-20 items-center justify-between border-b px-5">
-            <Link to="/" onClick={() => setOpen(false)}>
-              <span className="text-xl font-black leading-none text-brand-900 dark:text-white">
-                three-<b className="text-brand-500">N</b>
-                <small className="mt-1 block text-[8px] tracking-[.35em]">SERVICES</small>
-              </span>
+            <Link to="/" onClick={() => setOpen(false)} aria-label="Accueil Three-N Services">
+              <BrandLogo className="h-14 w-36" />
             </Link>
             <button
               className="grid size-11 place-items-center rounded-xl border"
@@ -159,10 +157,7 @@ export function PublicFooter() {
     <footer className="mt-20 bg-ink text-white">
       <div className="mx-auto grid max-w-7xl gap-9 px-4 py-12 sm:grid-cols-2 sm:px-6 md:grid-cols-4">
         <div>
-          <div className="flex items-center gap-3 font-black">
-            <span className="grid size-10 place-items-center rounded-xl bg-brand-500">3N</span>3N
-            SERVICES
-          </div>
+          <BrandLogo className="h-16 w-40 rounded-xl" />
           <p className="mt-4 text-sm leading-6 text-white/55">
             Une plateforme transparente pour trouver et réserver un véhicule auprès d’agences
             professionnelles.
