@@ -1,25 +1,23 @@
-import { ArrowLeft, CalendarDays, Car, Check, MapPin, Star } from 'lucide-react';
+import { ArrowLeft, CalendarDays, Car, Check, MapPin } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
 import { apiError } from '../../api/client';
-import { ErrorState, PageLoader, EmptyState } from '../../components/ui';
+import { ErrorState, PageLoader } from '../../components/ui';
 import { useAuth } from '../../contexts/AuthContext';
 import { dataService } from '../../services';
 import { useSeo } from '../../components/public/PublicLayout';
 import { VehicleCard } from '../../components/public/VehicleCard';
+import { formatCDFPerDay } from '../../utils/format';
 export function VehicleDetailPage() {
   const { id } = useParams();
   const vehicleId = Number(id);
+  const [activeImage, setActiveImage] = useState(0);
   const { user } = useAuth();
   const nav = useNavigate();
   const vehicle = useQuery({
     queryKey: ['vehicle', vehicleId],
     queryFn: () => dataService.vehicle(vehicleId).then((r) => r.data),
-    enabled: Number.isFinite(vehicleId),
-  });
-  const reviews = useQuery({
-    queryKey: ['public-reviews', vehicleId],
-    queryFn: () => dataService.publicReviews(vehicleId),
     enabled: Number.isFinite(vehicleId),
   });
   const similar = useQuery({
@@ -30,7 +28,7 @@ export function VehicleDetailPage() {
     vehicle.data
       ? `${vehicle.data.brand} ${vehicle.data.model} — 3N Services`
       : 'Détail du véhicule — 3N Services',
-    'Caractéristiques, disponibilité et avis du véhicule.',
+    'Caractéristiques, disponibilité et réservation du véhicule.',
   );
   if (vehicle.isLoading) return <PageLoader />;
   if (vehicle.error)
@@ -43,6 +41,8 @@ export function VehicleDetailPage() {
       </main>
     );
   const v = vehicle.data!;
+  const gallery = v.images.filter((image) => Boolean(image.image));
+  const selectedImage = gallery[activeImage] || gallery[0];
   const book = () => {
     const destination = `/vehicles/${v.id}/book`;
     if (!user) nav('/login', { state: { from: destination } });
@@ -50,7 +50,7 @@ export function VehicleDetailPage() {
     else nav(destination);
   };
   return (
-    <main className="mx-auto max-w-7xl px-6 py-10">
+    <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10">
       <Link
         className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-brand-600"
         to="/vehicles"
@@ -59,58 +59,61 @@ export function VehicleDetailPage() {
       </Link>
       <div className="mt-7 grid gap-8 lg:grid-cols-[1.5fr_1fr]">
         <section>
-          <div className="grid h-[430px] place-items-center overflow-hidden rounded-3xl bg-gradient-to-br from-slate-100 to-brand-50 dark:from-slate-800 dark:to-brand-900">
-            {v.images?.[0] ? (
+          <div className="grid aspect-[4/3] max-h-[430px] place-items-center overflow-hidden rounded-2xl bg-gradient-to-br from-slate-100 to-brand-50 dark:from-slate-800 dark:to-brand-900 sm:rounded-3xl">
+            {selectedImage?.image ? (
               <img
                 className="size-full object-cover"
-                src={v.images[0].image}
-                alt={`${v.brand} ${v.model}`}
+                src={selectedImage.image}
+                alt={selectedImage.caption || `${v.brand} ${v.model}`}
               />
             ) : (
               <Car size={110} className="text-brand-600/25" />
             )}
           </div>
-          {v.images && v.images.length > 1 && (
-            <div className="mt-3 grid grid-cols-4 gap-3">
-              {v.images.slice(1, 5).map((img) => (
-                <img
-                  className="h-24 w-full rounded-xl object-cover"
-                  src={img.image}
-                  alt={img.caption || v.model}
+          {gallery.length > 1 && (
+            <div className="mt-3 grid grid-cols-3 gap-3">
+              {gallery.map((img, index) => (
+                <button
+                  type="button"
+                  className={`overflow-hidden rounded-xl border-2 ${index === activeImage ? 'border-brand-600' : 'border-transparent'}`}
+                  onClick={() => setActiveImage(index)}
+                  aria-label={`Afficher l’image ${index + 1} de ${v.brand} ${v.model}`}
                   key={img.id}
-                />
+                >
+                  <img
+                    className="aspect-[4/3] w-full object-cover sm:h-24"
+                    src={img.image!}
+                    alt={img.caption || `${v.brand} ${v.model}, vue ${index + 1}`}
+                  />
+                </button>
               ))}
             </div>
           )}
         </section>
         <aside className="card h-fit lg:sticky lg:top-28">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center gap-2">
             <span
               className={`badge ${v.status === 'AVAILABLE' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}
             >
               {v.status === 'AVAILABLE' ? 'Disponible' : v.status}
             </span>
-            <span className="flex items-center gap-1 text-sm">
-              <Star size={16} className="fill-amber-400 text-amber-400" />
-              {v.average_rating || '—'} ({v.review_count})
-            </span>
           </div>
-          <h1 className="mt-5 text-3xl font-black">
+          <h1 className="mt-5 break-words text-2xl font-black sm:text-3xl">
             {v.brand} {v.model}
           </h1>
-          <p className="mt-2 flex items-center gap-1 text-sm text-slate-500">
+          <p className="mt-2 flex items-start gap-1 break-words text-sm text-slate-500">
             <MapPin size={15} />
-            {v.owner_city || 'Localisation non renseignée'} · {v.owner_email}
+            {v.owner_city || 'Localisation non renseignée'} ·{' '}
+            {v.agency_name?.trim() || 'Agence Three-N Services'}
           </p>
-          <p className="mt-7 text-3xl font-black text-brand-600">
-            {Number(v.daily_price).toLocaleString('fr-FR')}{' '}
-            <small className="text-sm font-normal text-slate-500">FCFA / jour</small>
+          <p className="mt-7 break-words text-2xl font-black text-accent-500 sm:text-3xl">
+            {formatCDFPerDay(Number(v.daily_price))}
           </p>
-          <div className="mt-6 grid grid-cols-2 gap-3 text-sm">
+          <div className="mt-6 grid gap-3 text-sm min-[360px]:grid-cols-2">
             {[
-              [v.year, 'Année'],
-              [v.transmission === 'MANUAL' ? 'Manuelle' : 'Automatique', 'Transmission'],
-              [v.fuel_type, 'Carburant'],
+              [v.year || 'Non renseignée', 'Année'],
+              [v.transmission ? (v.transmission === 'MANUAL' ? 'Manuelle' : 'Automatique') : 'Non renseignée', 'Transmission'],
+              [v.fuel_type || 'Non renseigné', 'Carburant'],
               [v.color, 'Couleur'],
               [v.category || 'Non renseignée', 'Catégorie'],
               [v.seats ? `${v.seats} places` : 'Non renseigné', 'Capacité'],
@@ -153,43 +156,12 @@ export function VehicleDetailPage() {
               ))}
           </div>
         </div>
-        <div className="card">
-          <h2 className="font-bold">Conditions essentielles</h2>
-          <ul className="mt-4 space-y-3 text-sm text-slate-500">
-            <li>Dates soumises à disponibilité réelle</li>
-            <li>Prix calculé par journée de location</li>
-            <li>Compte client requis pour réserver</li>
-            <li>Conditions finales confirmées par l’agence</li>
-          </ul>
-        </div>
-      </section>
-      <section className="mt-12">
-        <h2 className="text-2xl font-bold">Avis des clients</h2>
-        {reviews.isLoading ? (
-          <PageLoader />
-        ) : !reviews.data?.length ? (
-          <EmptyState title="Aucun avis pour ce véhicule" />
-        ) : (
-          <div className="mt-6 grid gap-4 md:grid-cols-2">
-            {reviews.data.map((r) => (
-              <article className="card" key={r.id}>
-                <div className="flex">
-                  {[1, 2, 3, 4, 5].map((n) => (
-                    <Star
-                      size={16}
-                      key={n}
-                      className={n <= r.rating ? 'fill-amber-400 text-amber-400' : 'text-slate-200'}
-                    />
-                  ))}
-                </div>
-                <p className="mt-4 text-sm leading-6">{r.comment || 'Aucun commentaire.'}</p>
-                <p className="mt-4 text-xs text-slate-500">
-                  {r.client_first_name} · {new Date(r.created_at).toLocaleDateString('fr-FR')}
-                </p>
-              </article>
-            ))}
+          <div className="card">
+            <h2 className="font-bold">Conditions essentielles</h2>
+            <p className="mt-4 text-sm text-slate-500">
+              Conditions de location non renseignées pour ce véhicule.
+            </p>
           </div>
-        )}
       </section>
       <section className="mt-12">
         <h2 className="text-2xl font-bold">Véhicules similaires</h2>

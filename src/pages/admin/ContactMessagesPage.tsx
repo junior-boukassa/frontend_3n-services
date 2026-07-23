@@ -19,7 +19,7 @@ const badge = (s: ContactStatus) =>
     : s === 'SPAM'
       ? 'bg-red-100 text-red-700'
       : s === 'IN_PROGRESS'
-        ? 'bg-blue-100 text-blue-700'
+        ? 'bg-brand-100 text-brand-700'
         : 'bg-amber-100 text-amber-700';
 export function ContactMessagesPage() {
   const [search, setSearch] = useState('');
@@ -68,7 +68,7 @@ export function ContactMessagesPage() {
       ) : (
         <div className="card overflow-hidden !p-0">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
+            <table className="min-w-[760px] w-full text-left text-sm">
               <thead className="bg-slate-50 text-xs uppercase text-slate-500 dark:bg-slate-800">
                 <tr>
                   {['Référence', 'Demandeur', 'Sujet', 'Statut', 'Reçu le'].map((h) => (

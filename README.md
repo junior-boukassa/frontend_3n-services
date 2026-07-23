@@ -5,7 +5,7 @@ Interface React/TypeScript de la plateforme 3N Services, connectée à l’API D
 ## Prérequis et installation
 
 - Node.js 20+
-- API disponible sur `http://127.0.0.1:8001/api` ou l’URL configurée
+- API Django disponible sur `http://127.0.0.1:8000/api` ou l’URL configurée
 
 ```bash
 npm install
@@ -16,10 +16,16 @@ npm run dev
 Variable disponible :
 
 ```env
-VITE_API_BASE_URL=http://127.0.0.1:8001/api
+VITE_API_BASE_URL=http://127.0.0.1:8000/api
 ```
 
 N’ajoutez jamais de secret backend dans une variable `VITE_*` : ces valeurs sont intégrées au bundle public.
+
+## Identité Three-N
+
+La palette est centralisée dans `tailwind.config.js` : bleu nuit `#071B5C`, bleu royal `#0B45D8`, bleu vif `#146CFF` et accent tarifaire orange `#FF9500`. Le vert reste réservé aux états fonctionnels de succès et de disponibilité.
+
+Le frontend consomme exclusivement les données réelles de l’API Django REST. Aucun mode démonstration, compte fictif ou catalogue local n’est présent.
 
 ## Commandes
 
@@ -48,16 +54,19 @@ Axios ajoute l’access token JWT et tente une seule rotation avec le refresh to
 
 Rôles exacts :
 
-- `CLIENT` : catalogue, réservations, paiements, avis et profil
-- `AGENCY` : flotte propre, réservations et paiements associés
+- `CLIENT` : catalogue, réservations, avis et profil
+- `AGENCY` : flotte propre et réservations associées
 - `ADMIN` : vues globales, utilisateurs et journal d’activités
 
-Routes principales : `/login`, `/register`, `/app/dashboard`, `/app/vehicles`, `/app/bookings`, `/app/payments`, `/app/reviews`, `/app/profile`, `/app/settings`, `/app/users` et `/app/logs`.
+Routes principales : `/login`, `/register`, `/app/dashboard`, `/app/vehicles`, `/app/bookings`, `/app/reviews`, `/app/profile`, `/app/settings`, `/app/users` et `/app/logs`.
 
-La partie publique utilise `/`, `/vehicles`, `/vehicles/:id`, `/about`, `/contact`, `/faq`, `/terms`, `/privacy` et `/agencies`. Le tunnel client utilise `/vehicles/:id/book`, `/bookings/:id`, `/bookings/:id/payment` et `/payments/:id`. Les anciennes routes privées `/app/*` restent compatibles.
+La partie publique utilise `/`, `/vehicles`, `/vehicles/:id`, `/about`, `/contact`, `/faq`, `/terms`, `/privacy` et `/agencies`. Le tunnel client utilise `/vehicles/:id/book` et `/bookings/:id`. Les anciennes routes privées `/app/*` restent compatibles.
 
 ## Limitations
 
-Le backend ne fournit pas encore de récupération de mot de passe par e-mail, notifications, tickets support, abonnement SaaS, factures ou paiement externe réel. Ces fonctions restent masquées ou sont présentées explicitement comme indisponibles. Leur ajout nécessite des modèles, endpoints, services externes et variables serveur dédiés ; aucune clé externe ne doit être placée dans le frontend.
+Le backend ne fournit pas encore de récupération de mot de passe par e-mail, tickets support,
+abonnement SaaS ou facture PDF. Ces fonctions restent masquées ou sont présentées explicitement
+comme indisponibles ; aucune clé externe ne doit être placée dans le frontend.
 
-L’annuaire public consomme `GET /api/agencies/` et `GET /api/agencies/:id/`. Le formulaire utilise `POST /api/contact/`; les administrateurs traitent les demandes via `/admin/contact-messages`. Un flux de paiement réel nécessitera encore un fournisseur, des webhooks signés et un modèle de transactions idempotent.
+L’annuaire public consomme `GET /api/agencies/` et `GET /api/agencies/:id/`. Le formulaire utilise
+`POST /api/contact/`; les administrateurs traitent les demandes via `/admin/contact-messages`.

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { LogOut, Menu, Moon, Sun, X } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { BrandLogo } from '../BrandLogo';
 const links = [
   ['/', 'Accueil'],
   ['/vehicles', 'Véhicules'],
@@ -15,6 +16,12 @@ export function PublicLayout() {
   const [open, setOpen] = useState(false);
   const [dark, setDark] = useState(() => localStorage.theme === 'dark');
   const navigate = useNavigate();
+  useEffect(() => {
+    document.body.style.overflow = open ? 'hidden' : '';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [open]);
   const theme = () => {
     const next = !dark;
     setDark(next);
@@ -24,12 +31,9 @@ export function PublicLayout() {
   return (
     <div className="min-h-screen">
       <header className="sticky top-0 z-40 border-b bg-white/90 backdrop-blur-xl dark:bg-slate-950/90">
-        <div className="mx-auto flex h-20 max-w-7xl items-center px-4 sm:px-6">
-          <Link to="/" className="flex items-center gap-3 font-black tracking-wide">
-            <span className="grid size-10 place-items-center rounded-xl bg-brand-600 text-white">
-              3N
-            </span>
-            <span>3N SERVICES</span>
+        <div className="mx-auto flex h-16 max-w-7xl items-center px-4 sm:h-20 sm:px-6">
+          <Link to="/" aria-label="Accueil Three-N Services">
+            <BrandLogo className="h-12 w-32" />
           </Link>
           <nav className="ml-10 hidden items-center gap-1 lg:flex">
             {links.map(([to, label]) => (
@@ -37,7 +41,7 @@ export function PublicLayout() {
                 key={to}
                 to={to}
                 className={({ isActive }) =>
-                  `rounded-lg px-3 py-2 text-sm font-medium ${isActive ? 'bg-brand-50 text-brand-700 dark:bg-slate-800' : 'text-slate-600 hover:text-brand-600 dark:text-slate-300'}`
+                  `rounded-lg px-3 py-2 text-sm font-medium ${isActive ? 'bg-brand-50 text-brand-700 dark:bg-brand-900 dark:text-brand-100' : 'text-slate-600 hover:text-brand-600 dark:text-slate-300'}`
                 }
               >
                 {label}
@@ -72,7 +76,7 @@ export function PublicLayout() {
             )}
           </div>
           <button
-            className="ml-auto lg:hidden"
+            className="ml-auto grid size-11 shrink-0 place-items-center rounded-xl lg:hidden"
             onClick={() => setOpen(!open)}
             aria-expanded={open}
             aria-label="Menu"
@@ -80,21 +84,54 @@ export function PublicLayout() {
             {open ? <X /> : <Menu />}
           </button>
         </div>
-        {open && (
-          <nav className="border-t p-4 lg:hidden">
+      </header>
+        <div
+          className={`fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-[2px] transition-opacity duration-300 lg:hidden ${
+            open ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
+          }`}
+          onClick={() => setOpen(false)}
+          aria-hidden="true"
+        />
+        <aside
+          className={`fixed inset-y-0 right-0 z-50 flex w-[min(22rem,88vw)] flex-col bg-white shadow-2xl transition-transform duration-300 ease-out dark:bg-slate-950 lg:hidden ${
+            open ? 'translate-x-0' : 'translate-x-full'
+          }`}
+          aria-hidden={!open}
+        >
+          <div className="flex h-20 items-center justify-between border-b px-5">
+            <Link to="/" onClick={() => setOpen(false)} aria-label="Accueil Three-N Services">
+              <BrandLogo className="h-14 w-36" />
+            </Link>
+            <button
+              className="grid size-11 place-items-center rounded-xl border"
+              onClick={() => setOpen(false)}
+              aria-label="Fermer le menu"
+            >
+              <X />
+            </button>
+          </div>
+          <nav className="flex-1 overflow-y-auto px-5 py-7">
             {links.map(([to, label]) => (
-              <Link
+              <NavLink
                 onClick={() => setOpen(false)}
-                className="block rounded-lg px-3 py-3 font-medium"
+                className={({ isActive }) =>
+                  `mb-2 flex items-center rounded-xl px-4 py-3.5 text-base font-semibold transition ${
+                    isActive
+                      ? 'bg-brand-50 text-brand-700 dark:bg-brand-900 dark:text-white'
+                      : 'text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-900'
+                  }`
+                }
                 key={to}
                 to={to}
               >
                 {label}
-              </Link>
+              </NavLink>
             ))}
-            <div className="mt-3 flex gap-2">
+          </nav>
+          <div className="border-t p-5">
+            <div className="grid gap-2 min-[380px]:grid-cols-2">
               {user ? (
-                <Link className="btn-primary flex-1" to="/app/dashboard">
+                <Link className="btn-primary col-span-full" to="/app/dashboard">
                   Tableau de bord
                 </Link>
               ) : (
@@ -108,9 +145,8 @@ export function PublicLayout() {
                 </>
               )}
             </div>
-          </nav>
-        )}
-      </header>
+          </div>
+        </aside>
       <Outlet />
       <PublicFooter />
     </div>
@@ -119,12 +155,9 @@ export function PublicLayout() {
 export function PublicFooter() {
   return (
     <footer className="mt-20 bg-ink text-white">
-      <div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 md:grid-cols-4">
+      <div className="mx-auto grid max-w-7xl gap-9 px-4 py-12 sm:grid-cols-2 sm:px-6 md:grid-cols-4">
         <div>
-          <div className="flex items-center gap-3 font-black">
-            <span className="grid size-10 place-items-center rounded-xl bg-brand-500">3N</span>3N
-            SERVICES
-          </div>
+          <BrandLogo className="h-16 w-40 rounded-xl" />
           <p className="mt-4 text-sm leading-6 text-white/55">
             Une plateforme transparente pour trouver et réserver un véhicule auprès d’agences
             professionnelles.

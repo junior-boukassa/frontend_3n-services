@@ -1,3 +1,5 @@
+import { themeTokens } from './src/config/themeTokens.js';
+
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: 'class',
@@ -5,18 +7,30 @@ export default {
   theme: {
     extend: {
       colors: {
-        ink: '#18221d',
-        cream: '#f6f7f2',
+        ink: themeTokens.colors.ink,
+        cream: themeTokens.colors.cream,
+        line: themeTokens.colors.line,
+        accent: {
+          500: themeTokens.colors.accent[500],
+        },
+        night: {
+          950: themeTokens.colors.night[950],
+          900: themeTokens.colors.night[900],
+          800: themeTokens.colors.night[800],
+          700: themeTokens.colors.night[700],
+          200: themeTokens.colors.night[200],
+          50: themeTokens.colors.night[50],
+        },
         brand: {
-          50: '#effaf5',
-          100: '#d8f3e7',
-          500: '#16a069',
-          600: '#0c8154',
-          700: '#096744',
-          900: '#143a2c',
+          50: themeTokens.colors.brand[50],
+          100: themeTokens.colors.brand[100],
+          500: themeTokens.colors.brand[500],
+          600: themeTokens.colors.brand[600],
+          700: themeTokens.colors.brand[700],
+          900: themeTokens.colors.brand[900],
         },
       },
-      boxShadow: { soft: '0 12px 35px rgba(20,58,44,.08)' },
+      boxShadow: { soft: themeTokens.shadows.soft },
     },
   },
   plugins: [],

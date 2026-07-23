@@ -39,7 +39,7 @@ export function ContactPage() {
     }
   };
   return (
-    <main className="mx-auto max-w-5xl px-6 py-14">
+    <main className="mx-auto max-w-5xl px-4 py-10 sm:px-6 sm:py-14">
       <header>
         <p className="text-sm font-bold uppercase tracking-widest text-brand-600">Contact</p>
         <h1 className="mt-3 text-4xl font-black">Comment pouvons-nous vous aider ?</h1>

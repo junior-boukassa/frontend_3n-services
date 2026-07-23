@@ -3,11 +3,12 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Car, Eye, EyeOff, Receipt, UserRound } from 'lucide-react';
+import { CheckCircle2, Eye, EyeOff, LockKeyhole, ShieldCheck, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '../../contexts/AuthContext';
 import { apiError } from '../../api/client';
 import { authService } from '../../services';
+import { BrandLogo } from '../../components/BrandLogo';
 const loginSchema = z.object({
   email: z.string().email('Adresse e-mail invalide'),
   password: z.string().min(8, '8 caractères minimum'),
@@ -23,45 +24,68 @@ function Shell({
   subtitle: string;
 }) {
   return (
-    <main className="grid min-h-screen bg-white dark:bg-slate-950 lg:grid-cols-2">
-      <section className="hidden overflow-hidden bg-ink p-12 text-white lg:flex lg:flex-col">
-        <div className="flex items-center gap-3 font-bold">
-          <span className="grid size-10 place-items-center rounded-xl bg-brand-500">3N</span>3N
-          SERVICES
-        </div>
-        <div className="my-auto max-w-lg">
-          <p className="mb-5 text-sm font-semibold uppercase tracking-[.25em] text-brand-500">
-            L’avenir de la mobilité
-          </p>
-          <h2 className="text-5xl font-bold leading-tight">
-            Votre flotte.
-            <br />
-            Votre liberté.
-          </h2>
-          <p className="mt-6 text-lg leading-relaxed text-white/60">
-            Gérez vos véhicules, réservations et paiements depuis une expérience pensée pour aller à
-            l’essentiel.
-          </p>
-          <div className="mt-12 flex gap-3">
-            {[Car, UserRound, Receipt].map((I, i) => (
-              <span key={i} className="grid size-12 place-items-center rounded-xl bg-white/10">
-                <I />
-              </span>
-            ))}
+    <main className="grid min-h-screen bg-slate-50 dark:bg-night-950 lg:grid-cols-[1.05fr_.95fr]">
+      <section className="relative hidden min-h-screen overflow-hidden text-white lg:flex lg:flex-col">
+        <img
+          className="absolute inset-0 size-full object-cover"
+          src="/images/kinshasa-boulevard.jpeg"
+          alt=""
+          aria-hidden="true"
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-night-950 via-night-950/95 to-brand-900/75" />
+        <div className="absolute -bottom-24 -right-20 size-96 rounded-full bg-brand-500/20 blur-3xl" />
+        <div className="relative flex h-full flex-1 flex-col p-10 xl:p-14">
+          <Link to="/" className="w-fit" aria-label="Retour à l’accueil">
+            <BrandLogo className="h-20 w-48 rounded-2xl shadow-2xl" />
+          </Link>
+          <div className="my-auto max-w-xl py-14">
+            <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-bold uppercase tracking-[.2em] text-brand-100 backdrop-blur">
+              <Sparkles size={14} /> La mobilité, maîtrisée
+            </p>
+            <h2 className="text-5xl font-black leading-[1.08] xl:text-6xl">
+              Pilotez chaque trajet en toute confiance.
+            </h2>
+            <p className="mt-7 max-w-lg text-lg leading-8 text-white/65">
+              Véhicules, réservations et paiements réunis dans une expérience claire, sécurisée et
+              pensée pour Kinshasa.
+            </p>
+            <div className="mt-10 grid max-w-lg grid-cols-2 gap-3">
+              {[
+                [ShieldCheck, 'Accès sécurisé'],
+                [CheckCircle2, 'Suivi en temps réel'],
+              ].map(([Icon, label]) => (
+                <div
+                  className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur"
+                  key={label as string}
+                >
+                  <Icon className="text-brand-200" size={21} />
+                  <span className="text-sm font-bold">{label as string}</span>
+                </div>
+              ))}
+            </div>
           </div>
+          <p className="text-xs text-white/40">
+            © {new Date().getFullYear()} Three-N Services · Mobilité simplifiée
+          </p>
         </div>
-        <p className="text-xs text-white/40">© 2026 3N Services</p>
       </section>
-      <section className="grid place-items-center p-6">
-        <div className="w-full max-w-md">
-          <div className="mb-8 lg:hidden">
-            <span className="grid size-11 place-items-center rounded-xl bg-brand-600 font-bold text-white">
-              3N
-            </span>
+      <section className="relative grid min-h-screen place-items-center overflow-hidden px-4 py-8 sm:p-8">
+        <div className="absolute -right-24 -top-24 size-80 rounded-full bg-brand-100/70 blur-3xl dark:bg-brand-900/30" />
+        <div className="relative w-full max-w-lg">
+          <Link className="mb-8 block w-fit lg:hidden" to="/">
+            <BrandLogo className="h-16 w-40 rounded-xl shadow-soft" />
+          </Link>
+          <div className="rounded-[2rem] border bg-white p-6 shadow-2xl shadow-brand-900/10 dark:bg-night-800 sm:p-9">
+            <div className="mb-7 flex size-12 items-center justify-center rounded-2xl bg-brand-50 text-brand-600 dark:bg-brand-900 dark:text-brand-100">
+              <LockKeyhole size={22} />
+            </div>
+            <h1 className="text-3xl font-black tracking-tight sm:text-4xl">{title}</h1>
+            <p className="mt-3 text-slate-500">{subtitle}</p>
+            <div className="mt-8">{children}</div>
           </div>
-          <h1 className="text-3xl font-bold">{title}</h1>
-          <p className="mt-2 text-slate-500">{subtitle}</p>
-          <div className="mt-8">{children}</div>
+          <p className="mt-5 text-center text-xs text-slate-400">
+            Connexion protégée · Vos données restent confidentielles
+          </p>
         </div>
       </section>
     </main>
@@ -90,9 +114,10 @@ export function LoginPage() {
     <Shell title="Ravi de vous revoir" subtitle="Connectez-vous pour accéder à votre espace.">
       <form onSubmit={handleSubmit(submit)} className="space-y-5">
         <div>
-          <label className="label">Adresse e-mail</label>
+          <label className="label" htmlFor="login-email">Adresse e-mail</label>
           <input
-            className="field"
+            id="login-email"
+            className="field w-full !py-3"
             type="email"
             placeholder="vous@entreprise.com"
             {...register('email')}
@@ -100,21 +125,22 @@ export function LoginPage() {
           <p className="mt-1 text-xs text-red-600">{errors.email?.message}</p>
         </div>
         <div>
-          <div className="flex justify-between">
-            <label className="label">Mot de passe</label>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <label className="label" htmlFor="login-password">Mot de passe</label>
             <Link className="text-sm text-brand-600" to="/forgot-password">
               Mot de passe oublié ?
             </Link>
           </div>
           <div className="relative">
             <input
-              className="field pr-11"
+              id="login-password"
+              className="field w-full !py-3 pr-11"
               type={show ? 'text' : 'password'}
               {...register('password')}
             />
             <button
               type="button"
-              className="absolute right-3 top-2.5 text-slate-400"
+              className="absolute right-3 top-3 text-slate-400"
               onClick={() => setShow(!show)}
             >
               {show ? <EyeOff /> : <Eye />}
@@ -122,7 +148,7 @@ export function LoginPage() {
           </div>
           <p className="mt-1 text-xs text-red-600">{errors.password?.message}</p>
         </div>
-        <button className="btn-primary w-full" disabled={isSubmitting}>
+        <button className="btn-primary w-full !py-3.5" disabled={isSubmitting}>
           {isSubmitting ? 'Connexion…' : 'Se connecter'}
         </button>
       </form>
@@ -162,7 +188,11 @@ export function RegisterPage() {
   const submit = async (v: Register) => {
     try {
       await authService.register(v);
-      toast.success('Compte créé. Vous pouvez vous connecter.');
+      toast.success(
+        v.role === 'AGENCY'
+          ? "Compte créé. L'administrateur doit valider votre agence avant toute publication."
+          : 'Compte créé. Vous pouvez vous connecter.',
+      );
       nav('/login');
     } catch (e) {
       toast.error(apiError(e));

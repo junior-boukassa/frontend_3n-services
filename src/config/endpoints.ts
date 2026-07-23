@@ -11,10 +11,11 @@ export const endpoints = {
   vehicles: '/vehicles/',
   bookings: '/bookings/',
   payments: '/payments/',
-  reviews: '/reviews/',
   logs: '/logs/',
   agencies: '/agencies/',
   contact: '/contact/',
   adminContacts: '/admin/contact-messages/',
+  pricingRecommendations: '/ai/pricing-recommendations/',
+  pricingClients: '/ai/pricing-clients/',
   dashboard: (role: string) => `/dashboard/${role.toLowerCase()}/`,
 };

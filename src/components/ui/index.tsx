@@ -44,11 +44,11 @@ export function Modal({
 }) {
   return (
     <div
-      className="fixed inset-0 z-50 grid place-items-center bg-slate-950/45 p-4"
+      className="fixed inset-0 z-50 grid place-items-end bg-slate-950/45 p-0 sm:place-items-center sm:p-4"
       onMouseDown={onClose}
     >
       <div
-        className="max-h-[90vh] w-full max-w-xl overflow-auto rounded-2xl bg-white p-6 shadow-2xl dark:bg-slate-900"
+        className="max-h-[92dvh] w-full max-w-xl overflow-auto rounded-t-2xl bg-white p-4 shadow-2xl dark:bg-slate-900 sm:max-h-[90vh] sm:rounded-2xl sm:p-6"
         onMouseDown={(e) => e.stopPropagation()}
       >
         <div className="mb-5 flex items-center justify-between">
