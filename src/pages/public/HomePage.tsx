@@ -227,22 +227,22 @@ export function HomePage() {
           </Link>
         </div>
       </section>
-      <section className="relative overflow-hidden bg-night-950 py-14 text-white sm:py-16">
-        <div className="absolute -left-24 -top-24 size-72 rounded-full bg-brand-500/15 blur-3xl" />
-        <div className="absolute -bottom-32 right-0 size-80 rounded-full bg-brand-600/15 blur-3xl" />
+      <section className="relative overflow-hidden border-y bg-gradient-to-br from-white via-brand-50/40 to-slate-100 py-14 text-ink dark:from-night-900 dark:via-night-900 dark:to-brand-900 sm:py-16">
+        <div className="absolute -left-24 -top-24 size-72 rounded-full bg-brand-500/10 blur-3xl" />
+        <div className="absolute -bottom-32 right-0 size-80 rounded-full bg-brand-600/10 blur-3xl" />
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
           <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[.22em] text-brand-200">
+              <p className="text-xs font-bold uppercase tracking-[.22em] text-brand-600">
                 Un écosystème de confiance
               </p>
               <h2 className="mt-3 text-3xl font-black sm:text-4xl">Ils avancent avec Three-N.</h2>
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-white/55 sm:text-base">
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-500 sm:text-base">
                 Des partenaires locaux engagés à nos côtés pour rendre chaque service plus simple,
                 plus fiable et plus accessible.
               </p>
             </div>
-            <span className="inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-bold text-white/70">
+            <span className="inline-flex w-fit items-center gap-2 rounded-full border border-brand-100 bg-white px-4 py-2 text-xs font-bold text-slate-600 shadow-soft dark:border-white/10 dark:bg-white/5 dark:text-white/70">
               <span className="size-2 rounded-full bg-emerald-400" />
               {partners.length} partenaires actifs
             </span>
@@ -251,7 +251,7 @@ export function HomePage() {
             <div className="partner-track">
               {[...partners, ...partners].map((partner, index) => (
                 <div
-                  className="group flex h-28 w-52 shrink-0 flex-col items-center justify-center rounded-2xl border border-white/10 bg-white p-4 shadow-xl transition hover:-translate-y-1 sm:h-32 sm:w-56"
+                  className="group flex h-28 w-52 shrink-0 flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white p-4 shadow-soft transition hover:-translate-y-1 hover:border-brand-200 hover:shadow-xl sm:h-32 sm:w-56"
                   key={`${partner.name}-${index}`}
                   aria-hidden={index >= partners.length}
                 >
