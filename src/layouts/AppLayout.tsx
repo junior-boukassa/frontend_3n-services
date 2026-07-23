@@ -89,16 +89,14 @@ export function AppLayout() {
       <aside
         className={`fixed inset-y-0 left-0 z-40 flex w-[min(18rem,86vw)] flex-col bg-ink text-white transition-all lg:w-auto ${collapsed ? 'lg:w-20' : 'lg:w-64'} ${open ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
       >
-        <div className="flex h-20 items-center gap-3 px-5">
-          <div className="grid size-10 place-items-center rounded-xl bg-brand-500 font-black">
-            3N
-          </div>
-          {!collapsed && (
-            <div>
-              <p className="font-bold tracking-wide">3N SERVICES</p>
-              <p className="text-xs text-white/50">Mobilité simplifiée</p>
-            </div>
-          )}
+        <div className={`flex h-24 items-center px-4 ${collapsed ? 'justify-center' : ''}`}>
+          <img
+            className={`rounded-2xl bg-white object-contain shadow-lg shadow-brand-900/20 ${
+              collapsed ? 'size-11' : 'h-16 w-28'
+            }`}
+            src="/favicon.png"
+            alt="Three-N Services"
+          />
           <button className="ml-auto lg:hidden" onClick={() => setOpen(false)}>
             <X />
           </button>

@@ -15,6 +15,12 @@ export function PublicLayout() {
   const [open, setOpen] = useState(false);
   const [dark, setDark] = useState(() => localStorage.theme === 'dark');
   const navigate = useNavigate();
+  useEffect(() => {
+    document.body.style.overflow = open ? 'hidden' : '';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [open]);
   const theme = () => {
     const next = !dark;
     setDark(next);
@@ -77,21 +83,56 @@ export function PublicLayout() {
             {open ? <X /> : <Menu />}
           </button>
         </div>
-        {open && (
-          <nav className="max-h-[calc(100dvh-4rem)] overflow-y-auto border-t p-4 lg:hidden">
+        <div
+          className={`fixed inset-0 top-16 z-40 bg-slate-950/50 backdrop-blur-sm transition-opacity lg:hidden ${
+            open ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
+          }`}
+          onClick={() => setOpen(false)}
+          aria-hidden="true"
+        />
+        <aside
+          className={`fixed bottom-0 right-0 top-0 z-50 flex w-[min(22rem,88vw)] flex-col bg-white shadow-2xl transition-transform duration-300 dark:bg-slate-950 lg:hidden ${
+            open ? 'translate-x-0' : 'translate-x-full'
+          }`}
+          aria-hidden={!open}
+        >
+          <div className="flex h-20 items-center justify-between border-b px-5">
+            <Link to="/" onClick={() => setOpen(false)}>
+              <span className="text-xl font-black leading-none text-brand-900 dark:text-white">
+                three-<b className="text-brand-500">N</b>
+                <small className="mt-1 block text-[8px] tracking-[.35em]">SERVICES</small>
+              </span>
+            </Link>
+            <button
+              className="grid size-11 place-items-center rounded-xl border"
+              onClick={() => setOpen(false)}
+              aria-label="Fermer le menu"
+            >
+              <X />
+            </button>
+          </div>
+          <nav className="flex-1 overflow-y-auto px-5 py-7">
             {links.map(([to, label]) => (
-              <Link
+              <NavLink
                 onClick={() => setOpen(false)}
-                className="block rounded-lg px-3 py-3 font-medium"
+                className={({ isActive }) =>
+                  `mb-2 flex items-center rounded-xl px-4 py-3.5 text-base font-semibold transition ${
+                    isActive
+                      ? 'bg-brand-50 text-brand-700 dark:bg-brand-900 dark:text-white'
+                      : 'text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-900'
+                  }`
+                }
                 key={to}
                 to={to}
               >
                 {label}
-              </Link>
+              </NavLink>
             ))}
-            <div className="mt-3 grid gap-2 min-[380px]:grid-cols-2">
+          </nav>
+          <div className="border-t p-5">
+            <div className="grid gap-2 min-[380px]:grid-cols-2">
               {user ? (
-                <Link className="btn-primary flex-1" to="/app/dashboard">
+                <Link className="btn-primary col-span-full" to="/app/dashboard">
                   Tableau de bord
                 </Link>
               ) : (
@@ -105,8 +146,8 @@ export function PublicLayout() {
                 </>
               )}
             </div>
-          </nav>
-        )}
+          </div>
+        </aside>
       </header>
       <Outlet />
       <PublicFooter />

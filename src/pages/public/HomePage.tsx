@@ -50,17 +50,6 @@ export function HomePage() {
               Comparez les offres, vérifiez la disponibilité et réservez auprès d’agences de
               confiance depuis une seule plateforme.
             </p>
-            <div className="mt-8 grid gap-3 min-[420px]:flex min-[420px]:flex-wrap">
-              <Link className="btn-primary w-full !px-5 !py-3.5 min-[420px]:w-auto sm:!px-6" to="/vehicles">
-                Rechercher un véhicule <ArrowRight size={18} />
-              </Link>
-              <Link
-                className="btn-secondary w-full !border-white/20 !bg-white/5 !px-5 !py-3.5 !text-white min-[420px]:w-auto sm:!px-6"
-                to="/register"
-              >
-                Créer un compte
-              </Link>
-            </div>
           </div>
           <div className="relative z-10">
             <form
