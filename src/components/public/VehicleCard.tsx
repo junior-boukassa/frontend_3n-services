@@ -1,4 +1,4 @@
-import { Car, MapPin, Star } from 'lucide-react';
+import { Car, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import type { Vehicle } from '../../types';
 import { formatCDFPerDay } from '../../utils/format';
@@ -39,13 +39,9 @@ export function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
             {formatCDFPerDay(Number(vehicle.daily_price))}
           </p>
         </div>
-        <div className="mt-4 flex justify-between border-t pt-4 text-sm text-slate-500">
+        <div className="mt-4 border-t pt-4 text-sm text-slate-500">
           <span>
             {vehicle.year || 'Année non renseignée'} · {vehicle.transmission ? (vehicle.transmission === 'MANUAL' ? 'Manuelle' : 'Automatique') : 'Transmission non renseignée'}
-          </span>
-          <span className="flex items-center gap-1">
-            <Star size={15} className="fill-amber-400 text-amber-400" />
-            {vehicle.average_rating || '—'} ({vehicle.review_count})
           </span>
         </div>
         <div className="mt-4 grid grid-cols-2 gap-2">

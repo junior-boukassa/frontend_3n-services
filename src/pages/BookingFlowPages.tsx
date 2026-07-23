@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -85,6 +85,7 @@ export function VehicleBookingPage() {
   const [booking, setBooking] = useState<Booking | null>(null);
   const [payment, setPayment] = useState<Payment | null>(null);
   const [method, setMethod] = useState<PaymentMethod>('MOBILE_MONEY');
+  const [phone, setPhone] = useState('');
   const [flowError, setFlowError] = useState('');
   const [busy, setBusy] = useState(false);
 
@@ -163,6 +164,35 @@ export function VehicleBookingPage() {
     }
   };
 
+  const acceptPaid = useCallback(async (confirmed: Payment) => {
+    if (!booking || confirmed.status !== 'PAID') return;
+    setPayment(confirmed);
+    setBooking({ ...booking, status: 'CONFIRMED' });
+    setStep(4);
+    toast.success('Paiement confirmé. Votre réservation est validée.');
+    await Promise.all([
+      qc.invalidateQueries({ queryKey: ['bookings'] }),
+      qc.invalidateQueries({ queryKey: ['booking', booking.id] }),
+    ]);
+  }, [booking, qc]);
+
+  const verifyPayment = useCallback(async () => {
+    if (!payment) return;
+    try {
+      const verified = await dataService.verifyPayment(payment.id);
+      setPayment(verified);
+      await acceptPaid(verified);
+    } catch (error) {
+      setFlowError(apiError(error));
+    }
+  }, [acceptPaid, payment]);
+
+  useEffect(() => {
+    if (!payment || payment.status !== 'PROCESSING' || method !== 'MOBILE_MONEY') return;
+    const timer = window.setInterval(() => void verifyPayment(), 5000);
+    return () => window.clearInterval(timer);
+  }, [method, payment, verifyPayment]);
+
   const pay = async () => {
     if (!booking) return;
     setBusy(true);
@@ -172,16 +202,14 @@ export function VehicleBookingPage() {
         booking_id: booking.id,
         method,
         amount: booking.total_price,
+        phone: method === 'MOBILE_MONEY' ? phone : undefined,
       });
-      const confirmed = await dataService.confirmPayment(created.id);
-      setPayment(confirmed);
-      setBooking({ ...booking, status: 'CONFIRMED' });
-      setStep(4);
-      toast.success('Paiement confirmé. Votre réservation est validée.');
-      await Promise.all([
-        qc.invalidateQueries({ queryKey: ['bookings'] }),
-        qc.invalidateQueries({ queryKey: ['booking', booking.id] }),
-      ]);
+      setPayment(created);
+      if (method === 'CARD' && created.checkout_url) {
+        window.location.assign(created.checkout_url);
+        return;
+      }
+      toast.info('Validez la demande FlexPay sur votre téléphone.');
     } catch (error) {
       setFlowError(apiError(error));
     } finally {
@@ -320,7 +348,6 @@ export function VehicleBookingPage() {
                 {[
                   ['MOBILE_MONEY', 'Mobile Money', 'M-Pesa, Airtel Money ou Orange Money'],
                   ['CARD', 'Carte bancaire', 'Visa ou Mastercard'],
-                  ['CASH', 'Paiement en espèces', "Paiement auprès de l'agence"],
                 ].map(([value, label, description]) => (
                   <label
                     className={`flex cursor-pointer items-center gap-4 rounded-2xl border p-4 ${
@@ -343,14 +370,35 @@ export function VehicleBookingPage() {
                   </label>
                 ))}
               </div>
-              <p className="mt-5 rounded-xl bg-amber-50 p-4 text-sm text-amber-800">
-                Mode prototype : la confirmation du paiement est simulée. Aucun débit bancaire
-                réel n’est effectué.
+              {method === 'MOBILE_MONEY' && (
+                <label className="mt-5 block text-sm font-semibold">
+                  Numéro Mobile Money
+                  <input
+                    className="input mt-2"
+                    inputMode="tel"
+                    autoComplete="tel"
+                    placeholder="243 8XX XXX XXX"
+                    value={phone}
+                    onChange={(event) => setPhone(event.target.value)}
+                  />
+                </label>
+              )}
+              <p className="mt-5 rounded-xl bg-brand-50 p-4 text-sm text-brand-800">
+                Paiement sécurisé par FlexPay. La réservation n’est confirmée qu’après
+                vérification directe de la transaction.
               </p>
+              {payment?.status === 'PROCESSING' && method === 'MOBILE_MONEY' && (
+                <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+                  Validez la notification sur votre téléphone. La vérification est automatique.
+                  <button className="btn-secondary mt-3 w-full" onClick={verifyPayment}>
+                    Vérifier maintenant
+                  </button>
+                </div>
+              )}
               {flowError && <p className="mt-4 text-sm text-red-600">{flowError}</p>}
               <button className="btn-primary mt-6 w-full !py-3.5" onClick={pay} disabled={busy}>
                 <CreditCard size={18} />
-                {busy ? 'Confirmation du paiement…' : 'Confirmer le paiement'}
+                {busy ? 'Connexion à FlexPay…' : 'Payer avec FlexPay'}
               </button>
             </>
           )}
@@ -475,8 +523,12 @@ export function BookingDetailPage() {
         <h2 className="font-bold">Détails de la location</h2>
         <dl className="mt-5 grid gap-5 sm:grid-cols-2">
           {[
-            ['Client', b.client_email],
+            ['Nom du client', b.client_name || b.client_email],
+            ['E-mail du client', b.client_email],
+            ['Téléphone du client', b.client_phone || 'Non renseigné'],
             ['Agence', b.vehicle_detail.agency_name?.trim() || 'Agence Three-N Services'],
+            ['E-mail de l’agence', b.agency_email],
+            ['Téléphone de l’agence', b.agency_phone || 'Non renseigné'],
             [
               'Début',
               `${new Date(b.start_date).toLocaleDateString('fr-FR')} à ${b.start_time?.slice(0, 5) || 'heure non renseignée'}`,
@@ -494,6 +546,46 @@ export function BookingDetailPage() {
             </div>
           ))}
         </dl>
+      </section>
+      <section className="card mt-6">
+        <h2 className="font-bold">Paiement et reçu</h2>
+        {!b.payments.length ? (
+          <p className="mt-4 text-sm text-slate-500">Aucun paiement enregistré.</p>
+        ) : (
+          <div className="mt-5 space-y-4">
+            {b.payments.map((payment) => (
+              <dl
+                className="grid gap-4 rounded-2xl bg-slate-50 p-4 text-sm dark:bg-slate-800 sm:grid-cols-2 lg:grid-cols-4"
+                key={payment.id}
+              >
+                <div>
+                  <dt className="text-slate-500">Montant</dt>
+                  <dd className="mt-1 font-bold">{formatCDF(Number(payment.amount))}</dd>
+                </div>
+                <div>
+                  <dt className="text-slate-500">Méthode</dt>
+                  <dd className="mt-1 font-bold">
+                    {payment.method === 'MOBILE_MONEY'
+                      ? 'Mobile Money'
+                      : payment.method === 'CARD'
+                        ? 'Carte bancaire'
+                        : 'Espèces'}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-slate-500">Statut</dt>
+                  <dd className="mt-1 font-bold">{payment.status}</dd>
+                </div>
+                <div>
+                  <dt className="text-slate-500">Référence du reçu</dt>
+                  <dd className="mt-1 break-all font-bold">
+                    {payment.transaction_reference || 'En attente'}
+                  </dd>
+                </div>
+              </dl>
+            ))}
+          </div>
+        )}
       </section>
       <div className="mt-6 flex flex-wrap gap-3">
         {user?.role !== 'CLIENT' && b.status === 'PENDING' && (

@@ -1,9 +1,9 @@
-import { ArrowLeft, CalendarDays, Car, Check, MapPin, Star } from 'lucide-react';
+import { ArrowLeft, CalendarDays, Car, Check, MapPin } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { apiError } from '../../api/client';
-import { ErrorState, PageLoader, EmptyState } from '../../components/ui';
+import { ErrorState, PageLoader } from '../../components/ui';
 import { useAuth } from '../../contexts/AuthContext';
 import { dataService } from '../../services';
 import { useSeo } from '../../components/public/PublicLayout';
@@ -20,11 +20,6 @@ export function VehicleDetailPage() {
     queryFn: () => dataService.vehicle(vehicleId).then((r) => r.data),
     enabled: Number.isFinite(vehicleId),
   });
-  const reviews = useQuery({
-    queryKey: ['public-reviews', vehicleId],
-    queryFn: () => dataService.publicReviews(vehicleId),
-    enabled: Number.isFinite(vehicleId),
-  });
   const similar = useQuery({
     queryKey: ['public-vehicles'],
     queryFn: () => dataService.vehicles(),
@@ -33,7 +28,7 @@ export function VehicleDetailPage() {
     vehicle.data
       ? `${vehicle.data.brand} ${vehicle.data.model} — 3N Services`
       : 'Détail du véhicule — 3N Services',
-    'Caractéristiques, disponibilité et avis du véhicule.',
+    'Caractéristiques, disponibilité et réservation du véhicule.',
   );
   if (vehicle.isLoading) return <PageLoader />;
   if (vehicle.error)
@@ -96,15 +91,11 @@ export function VehicleDetailPage() {
           )}
         </section>
         <aside className="card h-fit lg:sticky lg:top-28">
-          <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <span
               className={`badge ${v.status === 'AVAILABLE' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}
             >
               {v.status === 'AVAILABLE' ? 'Disponible' : v.status}
-            </span>
-            <span className="flex items-center gap-1 text-sm">
-              <Star size={16} className="fill-amber-400 text-amber-400" />
-              {v.average_rating || '—'} ({v.review_count})
             </span>
           </div>
           <h1 className="mt-5 break-words text-2xl font-black sm:text-3xl">
@@ -171,34 +162,6 @@ export function VehicleDetailPage() {
               Conditions de location non renseignées pour ce véhicule.
             </p>
           </div>
-      </section>
-      <section className="mt-12">
-        <h2 className="text-2xl font-bold">Avis des clients</h2>
-        {reviews.isLoading ? (
-          <PageLoader />
-        ) : !reviews.data?.length ? (
-          <EmptyState title="Aucun avis pour ce véhicule" />
-        ) : (
-          <div className="mt-6 grid gap-4 md:grid-cols-2">
-            {reviews.data.map((r) => (
-              <article className="card" key={r.id}>
-                <div className="flex">
-                  {[1, 2, 3, 4, 5].map((n) => (
-                    <Star
-                      size={16}
-                      key={n}
-                      className={n <= r.rating ? 'fill-amber-400 text-amber-400' : 'text-slate-200'}
-                    />
-                  ))}
-                </div>
-                <p className="mt-4 text-sm leading-6">{r.comment || 'Aucun commentaire.'}</p>
-                <p className="mt-4 text-xs text-slate-500">
-                  {r.client_first_name} · {new Date(r.created_at).toLocaleDateString('fr-FR')}
-                </p>
-              </article>
-            ))}
-          </div>
-        )}
       </section>
       <section className="mt-12">
         <h2 className="text-2xl font-bold">Véhicules similaires</h2>

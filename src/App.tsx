@@ -17,7 +17,6 @@ const PricingRecommendationsPage = named(
   'PricingRecommendationsPage',
 );
 const BookingsPage = named(() => import('./pages/DataPages'), 'BookingsPage'),
-  ReviewsPage = named(() => import('./pages/DataPages'), 'ReviewsPage'),
   UsersPage = named(() => import('./pages/DataPages'), 'UsersPage'),
   LogsPage = named(() => import('./pages/DataPages'), 'LogsPage');
 const ProfilePage = named(() => import('./pages/ProfilePage'), 'ProfilePage'),
@@ -47,8 +46,17 @@ const ContactMessagesPage = named(
     () => import('./pages/admin/ContactMessagesPage'),
     'ContactMessageDetailPage',
   );
+const AdminAgenciesPage = named(
+    () => import('./pages/admin/AdminAgencyPages'),
+    'AdminAgenciesPage',
+  ),
+  AdminAgencyDetailPage = named(
+    () => import('./pages/admin/AdminAgencyPages'),
+    'AdminAgencyDetailPage',
+  );
 const VehicleBookingPage = named(() => import('./pages/BookingFlowPages'), 'VehicleBookingPage'),
   BookingDetailPage = named(() => import('./pages/BookingFlowPages'), 'BookingDetailPage');
+const PaymentResultPage = named(() => import('./pages/PaymentResultPage'), 'PaymentResultPage');
 function Protected() {
   const { user, loading } = useAuth();
   const loc = useLocation();
@@ -91,9 +99,9 @@ export default function App() {
             <Route path="/vehicles/:id/book" element={<VehicleBookingPage />} />
           </Route>
           <Route path="/bookings/:id" element={<BookingDetailPage />} />
+          <Route path="/payment-result" element={<PaymentResultPage />} />
           <Route path="/dashboard" element={<Navigate to="/app/dashboard" replace />} />
           <Route path="/bookings" element={<Navigate to="/app/bookings" replace />} />
-          <Route path="/reviews" element={<Navigate to="/app/reviews" replace />} />
           <Route path="/profile" element={<Navigate to="/app/profile" replace />} />
           <Route path="/settings" element={<Navigate to="/app/settings" replace />} />
           <Route
@@ -113,14 +121,14 @@ export default function App() {
             element={<RoleAlias roles={['AGENCY']} to="/app/bookings" />}
           />
           <Route
-            path="/agency/reviews"
-            element={<RoleAlias roles={['AGENCY']} to="/app/reviews" />}
-          />
-          <Route
             path="/admin/dashboard"
             element={<RoleAlias roles={['ADMIN']} to="/app/dashboard" />}
           />
           <Route path="/admin/users" element={<RoleAlias roles={['ADMIN']} to="/app/users" />} />
+          <Route
+            path="/admin/agencies"
+            element={<RoleAlias roles={['ADMIN']} to="/app/agencies" />}
+          />
           <Route
             path="/admin/vehicles"
             element={<RoleAlias roles={['ADMIN']} to="/app/vehicles" />}
@@ -128,10 +136,6 @@ export default function App() {
           <Route
             path="/admin/bookings"
             element={<RoleAlias roles={['ADMIN']} to="/app/bookings" />}
-          />
-          <Route
-            path="/admin/reviews"
-            element={<RoleAlias roles={['ADMIN']} to="/app/reviews" />}
           />
           <Route
             path="/admin/activity-logs"
@@ -148,7 +152,6 @@ export default function App() {
             <Route path="dashboard" element={<DashboardPage />} />
             <Route path="vehicles" element={<VehiclesPage />} />
             <Route path="bookings" element={<BookingsPage />} />
-            <Route path="reviews" element={<ReviewsPage />} />
             <Route element={<RoleRoute roles={['AGENCY', 'ADMIN']} />}>
               <Route path="pricing" element={<PricingRecommendationsPage />} />
             </Route>
@@ -156,6 +159,8 @@ export default function App() {
             <Route path="settings" element={<SettingsPage />} />
             <Route path="help" element={<HelpPage />} />
             <Route element={<RoleRoute roles={['ADMIN']} />}>
+              <Route path="agencies" element={<AdminAgenciesPage />} />
+              <Route path="agencies/:id" element={<AdminAgencyDetailPage />} />
               <Route path="users" element={<UsersPage />} />
               <Route path="logs" element={<LogsPage />} />
             </Route>

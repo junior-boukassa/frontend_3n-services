@@ -5,13 +5,18 @@ import {
   CheckCircle2,
   Search,
   ShieldCheck,
-  Star,
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { dataService } from '../../services';
 import { VehicleCard, VehicleSkeleton } from '../../components/public/VehicleCard';
 import { useSeo } from '../../components/public/PublicLayout';
+const partners = [
+  { name: 'FlexPaie', logo: '/images/partners/flexpaie.png' },
+  { name: 'PM', logo: '/images/partners/pm.jpeg' },
+  { name: 'Naëlle Traiteur', logo: '/images/partners/naelle-traiteur.jpeg' },
+  { name: 'Mboka Media', logo: '/images/partners/mboka-media.avif' },
+];
 export function HomePage() {
   useSeo(
     '3N Services — Location de véhicules',
@@ -25,7 +30,14 @@ export function HomePage() {
   return (
     <main>
       <section className="relative overflow-hidden bg-gradient-to-br from-night-950 via-brand-900 to-brand-600 text-white">
-        <div className="absolute inset-0 opacity-50 bg-[radial-gradient(circle_at_78%_30%,var(--brand-glow),transparent_38%)]" />
+        <img
+          className="absolute inset-0 size-full object-cover object-center"
+          src="/images/kinshasa-boulevard.jpeg"
+          alt=""
+          aria-hidden="true"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-night-950 via-night-950/90 to-brand-900/55" />
+        <div className="absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_78%_30%,var(--brand-glow),transparent_38%)]" />
         <div className="relative mx-auto grid min-h-[560px] max-w-7xl items-center gap-10 px-4 py-14 sm:min-h-[640px] sm:px-6 sm:py-20 lg:grid-cols-2">
           <div className="relative z-10">
             <p className="mb-4 text-xs font-bold uppercase tracking-[.2em] text-brand-100 sm:mb-5 sm:text-sm sm:tracking-[.25em]">
@@ -90,6 +102,34 @@ export function HomePage() {
             : q.data?.slice(0, 3).map((v) => <VehicleCard vehicle={v} key={v.id} />)}
         </div>
       </section>
+      <section className="mx-auto max-w-7xl px-4 pb-14 sm:px-6 sm:pb-20">
+        <div className="grid overflow-hidden rounded-3xl bg-night-950 text-white shadow-2xl lg:grid-cols-[1.15fr_.85fr]">
+          <div className="relative min-h-64 sm:min-h-80">
+            <img
+              className="absolute inset-0 size-full object-cover"
+              src="/images/kinshasa-aerial.jpeg"
+              alt="Vue aérienne de Kinshasa et de ses axes routiers"
+              loading="lazy"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-night-950/55 to-transparent lg:bg-gradient-to-r lg:from-transparent lg:to-night-950/50" />
+          </div>
+          <div className="flex flex-col justify-center p-6 sm:p-10 lg:p-12">
+            <p className="text-xs font-bold uppercase tracking-[.25em] text-brand-200">
+              Pensé pour Kinshasa
+            </p>
+            <h2 className="mt-3 text-3xl font-black sm:text-4xl">
+              Bougez librement dans toute la ville
+            </h2>
+            <p className="mt-4 leading-7 text-white/65">
+              Du centre-ville aux communes périphériques, trouvez un véhicule adapté à vos
+              rendez-vous, vos événements et vos voyages.
+            </p>
+            <Link className="btn-primary mt-6 w-fit" to="/vehicles">
+              Voir les véhicules <ArrowRight size={18} />
+            </Link>
+          </div>
+        </div>
+      </section>
       <section className="bg-white py-20 dark:bg-slate-900">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="text-center">
@@ -111,9 +151,9 @@ export function HomePage() {
                 'Les conflits de dates sont contrôlés directement par notre API.',
               ],
               [
-                Star,
-                'Avis authentiques',
-                'Seuls les clients ayant terminé une réservation peuvent publier un avis.',
+                CheckCircle2,
+                'Parcours guidé',
+                'Les détails, le paiement et la confirmation sont présentés étape par étape.',
               ],
             ].map(([Icon, title, text]) => (
               <div className="card" key={title as string}>
@@ -174,10 +214,23 @@ export function HomePage() {
             Nous collaborons avec des organisations engagées pour proposer une mobilité fiable et
             accessible.
           </p>
-          <div className="mx-auto mt-10 max-w-3xl rounded-2xl border border-dashed border-brand-200 bg-brand-50/50 px-6 py-10 transition hover:border-brand-400 dark:border-slate-700 dark:bg-slate-800/50">
-            <p className="font-semibold text-slate-600 dark:text-slate-300">
-              Nos partenaires seront bientôt présentés ici.
-            </p>
+          <div className="partner-marquee mt-10">
+            <div className="partner-track">
+              {[...partners, ...partners].map((partner, index) => (
+                <div
+                  className="flex h-32 w-56 shrink-0 items-center justify-center rounded-2xl border bg-white p-5 shadow-soft dark:bg-slate-800 sm:h-36 sm:w-64"
+                  key={`${partner.name}-${index}`}
+                  aria-hidden={index >= partners.length}
+                >
+                  <img
+                    className="max-h-full max-w-full object-contain"
+                    src={partner.logo}
+                    alt={index < partners.length ? `Logo ${partner.name}` : ''}
+                    loading="lazy"
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>

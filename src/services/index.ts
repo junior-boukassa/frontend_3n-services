@@ -4,15 +4,12 @@ import type {
   ActivityLog,
   Booking,
   Paginated,
-  Review,
-  PublicReview,
   Role,
   User,
   Vehicle,
   Agency,
   ContactMessage,
   ContactStatus,
-  PublicGlobalReview,
   PricingRecommendation,
   PricingClient,
   Payment,
@@ -60,21 +57,16 @@ export const dataService = {
   bookingStatus: (id: number, status: Booking['status']) =>
     api.post(`${endpoints.bookings}${id}/set_status/`, { status }),
   cancelBooking: (id: number) => api.post(`${endpoints.bookings}${id}/cancel/`),
-  createPayment: (data: { booking_id: number; method: PaymentMethod; amount: string }) =>
+  createPayment: (data: {
+    booking_id: number;
+    method: PaymentMethod;
+    amount: string;
+    phone?: string;
+  }) =>
     api.post<Payment>(endpoints.payments, data).then((r) => r.data),
-  confirmPayment: (id: number) =>
-    api
-      .post<Payment>(`${endpoints.payments}${id}/confirm/`, { simulate_success: true })
-      .then((r) => r.data),
-  reviews: async () => allPages<Review>(endpoints.reviews),
-  createReview: (data: { booking: number; rating: number; comment: string }) =>
-    api.post(endpoints.reviews, data),
-  publicReviews: (vehicleId: number) =>
-    api
-      .get<PublicReview[]>(`${endpoints.reviews}for-vehicle/`, {
-        params: { vehicle_id: vehicleId },
-      })
-      .then((r) => r.data),
+  verifyPayment: (id: number) =>
+    api.post<Payment>(`${endpoints.payments}${id}/verify/`).then((r) => r.data),
+  payments: async () => allPages<Payment>(endpoints.payments),
   availability: (
     vehicle_id: number,
     start: string,
@@ -115,11 +107,6 @@ export const contactService = {
   updateStatus: (id: number, status: ContactStatus) =>
     api.patch<ContactMessage>(`${endpoints.adminContacts}${id}/`, { status }).then((r) => r.data),
 };
-export const publicReviewService = {
-  list: (params?: Record<string, string | number>) =>
-    allPages<PublicGlobalReview>(`${endpoints.reviews}public/`, params),
-};
-
 export interface PricingRecommendationRequest {
   vehicle_id: number;
   booking_id?: number;

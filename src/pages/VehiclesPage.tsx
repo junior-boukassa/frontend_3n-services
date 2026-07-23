@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Car, MapPin, Pencil, Plus, Search, Star, Trash2, X } from 'lucide-react';
+import { Car, MapPin, Pencil, Plus, Search, Trash2, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -134,10 +134,6 @@ export function VehiclesPage() {
                 <div className="mt-4 flex items-center justify-between border-t pt-4 text-sm text-slate-500">
                   <span>
                     {v.year} · {v.transmission === 'MANUAL' ? 'Manuelle' : 'Automatique'}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Star size={15} className="fill-amber-400 text-amber-400" />
-                    {v.average_rating || '—'} ({v.review_count})
                   </span>
                 </div>
               </div>

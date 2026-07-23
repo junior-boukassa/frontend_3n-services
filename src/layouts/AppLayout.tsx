@@ -3,6 +3,7 @@ import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
   Activity,
   BookOpen,
+  Building2,
   CalendarDays,
   Car,
   ChevronLeft,
@@ -12,7 +13,6 @@ import {
   Mail,
   Moon,
   BrainCircuit,
-  Star,
   Settings,
   Sun,
   UserRound,
@@ -24,7 +24,7 @@ const labels: Record<string, string> = {
   dashboard: 'Tableau de bord',
   vehicles: 'Véhicules',
   bookings: 'Réservations',
-  reviews: 'Avis',
+  agencies: 'Agences',
   users: 'Utilisateurs',
   logs: 'Journal d’activités',
   profile: 'Mon profil',
@@ -59,16 +59,12 @@ export function AppLayout() {
       user?.role === 'CLIENT' ? 'Mes réservations' : user?.role === 'AGENCY' ? 'Réservations reçues' : 'Réservations',
       CalendarDays,
     ],
-    [
-      '/app/reviews',
-      user?.role === 'CLIENT' ? 'Mes avis' : user?.role === 'AGENCY' ? 'Avis de mes véhicules' : 'Avis',
-      Star,
-    ],
     ...(user?.role === 'AGENCY' || user?.role === 'ADMIN'
       ? ([['/app/pricing', 'Tarification intelligente', BrainCircuit]] as const)
       : []),
     ...(user?.role === 'ADMIN'
       ? ([
+          ['/app/agencies', 'Agences', Building2],
           ['/app/users', 'Utilisateurs', Users],
           ['/app/logs', 'Journal d’activités', Activity],
           ['/admin/contact-messages', 'Messages reçus', Mail],

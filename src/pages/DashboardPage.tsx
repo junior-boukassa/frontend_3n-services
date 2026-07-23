@@ -29,7 +29,6 @@ const names: Record<string, string> = {
   revenue_generated: 'Revenu généré',
   bookings_received: 'Demandes reçues',
   payments_received: 'Paiements reçus',
-  reviews_received: 'Avis reçus',
   occupancy_rate: 'Taux d’occupation',
 };
 export function DashboardPage() {

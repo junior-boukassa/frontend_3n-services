@@ -31,6 +31,23 @@ export function AboutPage() {
         3N Services simplifie la recherche, la comparaison et la réservation de véhicules. Notre
         mission est de rendre chaque étape claire, de la disponibilité au suivi du paiement.
       </p>
+      <figure className="relative mt-10 overflow-hidden rounded-3xl">
+        <img
+          className="h-72 w-full object-cover object-center sm:h-96"
+          src="/images/kinshasa-monument.jpeg"
+          alt="Vue de Kinshasa autour de la Tour de l’Échangeur"
+          loading="lazy"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-night-950/80 via-transparent to-transparent" />
+        <figcaption className="absolute inset-x-0 bottom-0 p-5 text-white sm:p-8">
+          <p className="text-xs font-bold uppercase tracking-[.25em] text-brand-100">
+            Notre ancrage
+          </p>
+          <p className="mt-2 max-w-xl text-xl font-bold sm:text-2xl">
+            Une solution locale pour simplifier la mobilité à Kinshasa.
+          </p>
+        </figcaption>
+      </figure>
       <div className="mt-10 grid gap-5 md:grid-cols-3">
         {[
           [Target, 'Notre mission', 'Rendre la location automobile accessible et transparente.'],
@@ -42,7 +59,7 @@ export function AboutPage() {
           [
             ShieldCheck,
             'Nos engagements',
-            'Traçabilité des actions, avis liés aux réservations et contrôle des accès.',
+            'Traçabilité des actions, validation des agences et contrôle des accès.',
           ],
         ].map(([Icon, t, d]) => (
           <div className="card" key={t as string}>
@@ -57,7 +74,7 @@ export function AboutPage() {
           <h2 className="text-2xl font-bold">Pour les clients</h2>
           <p className="mt-3 text-slate-500">
             Des prix lisibles, une disponibilité contrôlée et un espace unique pour les
-            réservations, paiements et avis.
+            réservations et paiements.
           </p>
         </div>
         <div>
@@ -141,11 +158,6 @@ const faqs = [
     'Une réservation en attente peut être annulée par son client. Les autres statuts nécessitent une intervention autorisée.',
   ],
   [
-    'Avis',
-    'Qui peut publier un avis ?',
-    'Seul le client d’une réservation terminée et sans avis existant peut en publier un.',
-  ],
-  [
     'Agences',
     'Comment gérer une flotte ?',
     'Créez un compte AGENCY. Une agence ne peut gérer que ses propres véhicules.',
@@ -219,7 +231,7 @@ export function PrivacyPage() {
       sections={[
         [
           'Données collectées',
-          'Identité, coordonnées, profil, réservations, références de paiement, avis, adresses IP et journaux d’activité. Les données de carte ne transitent pas par 3N Services.',
+          'Identité, coordonnées, profil, réservations, références de paiement, adresses IP et journaux d’activité. Les données de carte ne transitent pas par 3N Services.',
         ],
         [
           'Finalités',
@@ -255,7 +267,7 @@ export function AgenciesPage() {
         <p className="mt-2 text-sm leading-6">
           Le backend ne fournit pas d’endpoint public pour lister ou consulter les agences. L’API
           nécessaire est <code>GET /api/agencies/</code> et <code>GET /api/agencies/:id/</code>,
-          avec nom, ville, flotte et moyenne des avis.
+          avec nom, ville et flotte disponible.
         </p>
       </div>
     </Content>

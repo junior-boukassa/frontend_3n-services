@@ -65,6 +65,19 @@
 }
 
 @layer utilities {
+  .partner-marquee {
+    @apply overflow-hidden;
+    mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+  }
+  .partner-track {
+    display: flex;
+    width: max-content;
+    gap: 1.25rem;
+    animation: partner-scroll 24s linear infinite;
+  }
+  .partner-track:hover {
+    animation-play-state: paused;
+  }
   .dark .text-slate-500 {
     @apply text-night-200;
   }
@@ -76,5 +89,17 @@
   }
   .dark .text-gray-600 {
     @apply text-night-50;
+  }
+}
+
+@keyframes partner-scroll {
+  to {
+    transform: translateX(calc(-50% - 0.625rem));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .partner-track {
+    animation: none;
   }
 }

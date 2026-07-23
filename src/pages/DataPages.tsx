@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Check, Plus, Search, Star } from 'lucide-react';
+import { Check, Plus, Search } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -215,38 +215,6 @@ function BookingForm({ onDone }: { onDone: () => void }) {
         {isSubmitting ? 'Vérification…' : 'Réserver'}
       </button>
     </form>
-  );
-}
-export function ReviewsPage() {
-  const q = useQuery({ queryKey: ['reviews'], queryFn: dataService.reviews });
-  if (q.isLoading) return <PageLoader />;
-  if (q.error) return <ErrorState message={apiError(q.error)} />;
-  if (!q.data?.length) return <EmptyState title="Aucun avis" />;
-  return (
-    <div className="grid gap-4 md:grid-cols-2">
-      {q.data.map((r) => (
-        <article className="card" key={r.id}>
-          <div className="flex items-center justify-between">
-            <div className="flex">
-              {[1, 2, 3, 4, 5].map((n) => (
-                <Star
-                  key={n}
-                  size={17}
-                  className={n <= r.rating ? 'fill-amber-400 text-amber-400' : 'text-slate-200'}
-                />
-              ))}
-            </div>
-            <span className="text-xs text-slate-400">
-              {new Date(r.created_at).toLocaleDateString('fr-FR')}
-            </span>
-          </div>
-          <p className="mt-4 text-sm leading-relaxed">{r.comment || 'Aucun commentaire.'}</p>
-          <div className="mt-5 border-t pt-4 text-xs text-slate-500">
-            {r.client_email} · Véhicule {r.vehicle_plate}
-          </div>
-        </article>
-      ))}
-    </div>
   );
 }
 export function UsersPage() {

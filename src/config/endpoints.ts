@@ -11,7 +11,6 @@ export const endpoints = {
   vehicles: '/vehicles/',
   bookings: '/bookings/',
   payments: '/payments/',
-  reviews: '/reviews/',
   logs: '/logs/',
   agencies: '/agencies/',
   contact: '/contact/',

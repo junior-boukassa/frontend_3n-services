@@ -53,6 +53,11 @@ export interface Booking {
   vehicle_detail: Vehicle;
   client: number;
   client_email: string;
+  client_name: string;
+  client_phone: string;
+  agency_email: string;
+  agency_phone: string;
+  payments: Payment[];
   start_date: string;
   end_date: string;
   start_time: string | null;
@@ -70,28 +75,15 @@ export interface Payment {
   booking_vehicle: string;
   amount: string;
   method: PaymentMethod;
-  status: 'PENDING' | 'PAID' | 'FAILED' | 'REFUNDED';
+  status: 'PENDING' | 'PROCESSING' | 'PAID' | 'FAILED' | 'REFUNDED';
   transaction_reference: string;
+  provider_order_number: string;
+  provider_reference: string;
+  checkout_url: string;
+  customer_phone: string;
+  provider_message: string;
   created_at: string;
   updated_at: string;
-}
-export interface Review {
-  id: number;
-  booking: number;
-  client: number;
-  client_email: string;
-  vehicle_plate: string;
-  agency_email: string;
-  rating: number;
-  comment: string;
-  created_at: string;
-}
-export interface PublicReview {
-  id: number;
-  client_first_name: string;
-  rating: number;
-  comment: string;
-  created_at: string;
 }
 export interface Agency {
   id: number;
@@ -119,15 +111,6 @@ export interface ContactMessage {
   ip_address: string | null;
   created_at: string;
   updated_at: string;
-}
-export interface PublicGlobalReview {
-  id: number;
-  rating: number;
-  comment: string;
-  vehicle: { id: number; brand: string; model: string };
-  agency: { id: number; name: string };
-  author_display_name: string;
-  created_at: string;
 }
 export interface ActivityLog {
   id: number;
