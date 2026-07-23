@@ -15,11 +15,12 @@ import { formatCDF, formatCDFPerDay } from '../utils/format';
 
 const statusLabel: Record<string, string> = {
   PENDING: 'En attente',
-  CONFIRMED: 'Confirmée',
+  CONFIRMED: 'Réussie',
   CANCELLED: 'Annulée',
+  PROCESSING: 'Traitement en cours',
   COMPLETED: 'Terminée',
-  PAID: 'Payé',
-  FAILED: 'Échoué',
+  PAID: 'Réussi',
+  FAILED: 'Échec',
   REFUNDED: 'Remboursé',
 };
 const badge = (s: string) =>

@@ -10,6 +10,7 @@ import {
   Check,
   CheckCircle2,
   CreditCard,
+  Download,
   Info,
   WalletCards,
 } from 'lucide-react';
@@ -472,9 +473,17 @@ const badge = (s: string) =>
       : 'bg-amber-100 text-amber-700';
 const bookingStatusLabel: Record<Booking['status'], string> = {
   PENDING: 'En attente de paiement',
-  CONFIRMED: 'Confirmée',
+  CONFIRMED: 'Réussie',
   CANCELLED: 'Annulée',
+  FAILED: 'Échec',
   COMPLETED: 'Terminée',
+};
+const paymentStatusLabel: Record<Payment['status'], string> = {
+  PENDING: 'En attente',
+  PROCESSING: 'Traitement en cours',
+  PAID: 'Réussi',
+  FAILED: 'Échec',
+  REFUNDED: 'Remboursé',
 };
 
 export function BookingDetailPage() {
@@ -482,6 +491,7 @@ export function BookingDetailPage() {
   const bookingId = Number(id);
   const { user } = useAuth();
   const qc = useQueryClient();
+  const [downloading, setDownloading] = useState(false);
   const q = useQuery({
     queryKey: ['booking', bookingId],
     queryFn: () => dataService.booking(bookingId),
@@ -574,7 +584,9 @@ export function BookingDetailPage() {
                 </div>
                 <div>
                   <dt className="text-slate-500">Statut</dt>
-                  <dd className="mt-1 font-bold">{payment.status}</dd>
+                  <dd className={`mt-1 inline-flex rounded-full px-2.5 py-1 font-bold ${badge(payment.status)}`}>
+                    {paymentStatusLabel[payment.status]}
+                  </dd>
                 </div>
                 <div>
                   <dt className="text-slate-500">Référence du reçu</dt>
@@ -588,6 +600,24 @@ export function BookingDetailPage() {
         )}
       </section>
       <div className="mt-6 flex flex-wrap gap-3">
+        <button
+          className="btn-secondary"
+          disabled={downloading}
+          onClick={async () => {
+            setDownloading(true);
+            try {
+              await dataService.downloadBookingPdf(b.id);
+              toast.success('PDF téléchargé');
+            } catch (error) {
+              toast.error(apiError(error));
+            } finally {
+              setDownloading(false);
+            }
+          }}
+        >
+          <Download size={17} />
+          {downloading ? 'Préparation du PDF…' : 'Télécharger le PDF'}
+        </button>
         {user?.role !== 'CLIENT' && b.status === 'PENDING' && (
           <button className="btn-primary" onClick={() => action.mutate('CONFIRMED')}>
             Confirmer

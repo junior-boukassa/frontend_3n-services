@@ -46,6 +46,19 @@ export const dataService = {
   deleteVehicle: (id: number) => api.delete(`${endpoints.vehicles}${id}/`),
   bookings: async () => allPages<Booking>(endpoints.bookings),
   booking: (id: number) => api.get<Booking>(`${endpoints.bookings}${id}/`).then((r) => r.data),
+  downloadBookingPdf: async (id: number) => {
+    const response = await api.get<Blob>(`${endpoints.bookings}${id}/receipt/`, {
+      responseType: 'blob',
+    });
+    const url = URL.createObjectURL(response.data);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `reservation-3n-${id}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  },
   createBooking: (data: {
     vehicle_id: number;
     start_date: string;

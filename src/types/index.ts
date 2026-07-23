@@ -64,7 +64,7 @@ export interface Booking {
   end_time: string | null;
   duration_days: number;
   total_price: string;
-  status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
+  status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'FAILED' | 'COMPLETED';
   created_at: string;
   updated_at: string;
 }

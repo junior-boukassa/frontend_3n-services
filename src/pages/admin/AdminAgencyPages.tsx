@@ -28,8 +28,9 @@ function useAdminAgencyData() {
 
 const bookingLabels: Record<Booking['status'], string> = {
   PENDING: 'En attente',
-  CONFIRMED: 'Confirmée',
+  CONFIRMED: 'Réussie',
   CANCELLED: 'Annulée',
+  FAILED: 'Échec',
   COMPLETED: 'Terminée',
 };
 const paymentLabels = {
@@ -341,7 +342,17 @@ function BookingReceipt({ booking }: { booking: Booking }) {
             </div>
             <div>
               <dt className="text-slate-500">Statut</dt>
-              <dd className="font-bold">{payment.status}</dd>
+              <dd className="font-bold">
+                {payment.status === 'PAID'
+                  ? 'Réussi'
+                  : payment.status === 'FAILED'
+                    ? 'Échec'
+                    : payment.status === 'PROCESSING'
+                      ? 'Traitement en cours'
+                      : payment.status === 'REFUNDED'
+                        ? 'Remboursé'
+                        : 'En attente'}
+              </dd>
             </div>
             <div>
               <dt className="text-slate-500">Référence du reçu</dt>
