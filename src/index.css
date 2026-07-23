@@ -72,8 +72,8 @@
   .partner-track {
     display: flex;
     width: max-content;
-    gap: 1.25rem;
-    animation: partner-scroll 24s linear infinite;
+    gap: 1rem;
+    animation: partner-scroll 28s linear infinite;
   }
   .partner-track:hover {
     animation-play-state: paused;
@@ -94,7 +94,7 @@
 
 @keyframes partner-scroll {
   to {
-    transform: translateX(calc(-50% - 0.625rem));
+    transform: translateX(calc(-50% - 0.5rem));
   }
 }
 

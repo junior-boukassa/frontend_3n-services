@@ -227,30 +227,51 @@ export function HomePage() {
           </Link>
         </div>
       </section>
-      <section className="border-t bg-white py-20 dark:border-slate-800 dark:bg-slate-900">
-        <div className="mx-auto max-w-7xl px-6 text-center">
-          <p className="text-sm font-bold uppercase tracking-widest text-brand-600">
-            Un réseau de confiance
-          </p>
-          <h2 className="mt-2 text-3xl font-bold">Nos partenaires</h2>
-          <p className="mx-auto mt-3 max-w-2xl text-slate-500">
-            Nous collaborons avec des organisations engagées pour proposer une mobilité fiable et
-            accessible.
-          </p>
-          <div className="partner-marquee mt-10">
+      <section className="relative overflow-hidden bg-night-950 py-14 text-white sm:py-16">
+        <div className="absolute -left-24 -top-24 size-72 rounded-full bg-brand-500/15 blur-3xl" />
+        <div className="absolute -bottom-32 right-0 size-80 rounded-full bg-brand-600/15 blur-3xl" />
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
+          <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[.22em] text-brand-200">
+                Un écosystème de confiance
+              </p>
+              <h2 className="mt-3 text-3xl font-black sm:text-4xl">Ils avancent avec Three-N.</h2>
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-white/55 sm:text-base">
+                Des partenaires locaux engagés à nos côtés pour rendre chaque service plus simple,
+                plus fiable et plus accessible.
+              </p>
+            </div>
+            <span className="inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-bold text-white/70">
+              <span className="size-2 rounded-full bg-emerald-400" />
+              {partners.length} partenaires actifs
+            </span>
+          </div>
+          <div className="partner-marquee mt-9">
             <div className="partner-track">
               {[...partners, ...partners].map((partner, index) => (
                 <div
-                  className="flex h-32 w-56 shrink-0 items-center justify-center rounded-2xl border bg-white p-5 shadow-soft dark:bg-slate-800 sm:h-36 sm:w-64"
+                  className="group flex h-28 w-52 shrink-0 flex-col items-center justify-center rounded-2xl border border-white/10 bg-white p-4 shadow-xl transition hover:-translate-y-1 sm:h-32 sm:w-56"
                   key={`${partner.name}-${index}`}
                   aria-hidden={index >= partners.length}
                 >
-                  <img
-                    className="max-h-full max-w-full object-contain"
-                    src={partner.logo}
-                    alt={index < partners.length ? `Logo ${partner.name}` : ''}
-                    loading="lazy"
-                  />
+                  <div className="flex h-16 w-full items-center justify-center overflow-hidden">
+                    <img
+                      className={`max-h-14 max-w-[75%] object-contain transition duration-300 group-hover:scale-105 ${
+                        partner.name === 'FlexPaie'
+                          ? 'scale-150 group-hover:scale-[1.58]'
+                          : partner.name === 'PM'
+                            ? 'scale-125 group-hover:scale-[1.32]'
+                            : ''
+                      }`}
+                      src={partner.logo}
+                      alt={index < partners.length ? `Logo ${partner.name}` : ''}
+                      loading="lazy"
+                    />
+                  </div>
+                  <p className="mt-2 text-[10px] font-bold uppercase tracking-[.16em] text-slate-400">
+                    {partner.name}
+                  </p>
                 </div>
               ))}
             </div>
