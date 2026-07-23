@@ -10,7 +10,7 @@ export function BrandLogo({ className = '' }: { className?: string }) {
         style={{
           backgroundImage: "url('/three-n-services-logo.jpeg')",
           backgroundPosition: 'center 53%',
-          backgroundSize: '145% auto',
+          backgroundSize: '126% auto',
         }}
       />
     </span>
