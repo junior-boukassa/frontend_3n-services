@@ -399,7 +399,7 @@ function CreateRecommendationForm({ vehicles, onDone }: { vehicles: Vehicle[]; o
             {clients.data && (clients.data.next || clients.data.previous) && (
               <div className="flex items-center justify-between text-xs text-slate-500">
                 <span>{clients.data.count} client(s) · page {clientPage}</span>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   <button className="btn-secondary !p-2" type="button" disabled={!clients.data.previous} onClick={() => setClientPage((value) => value - 1)} aria-label="Clients précédents"><ChevronLeft size={16} /></button>
                   <button className="btn-secondary !p-2" type="button" disabled={!clients.data.next} onClick={() => setClientPage((value) => value + 1)} aria-label="Clients suivants"><ChevronRight size={16} /></button>
                 </div>
@@ -491,7 +491,7 @@ function RecommendationDetail({ recommendation, vehicle, onUpdated }: { recommen
           {decision === 'MODIFY' && <label className="label">Nouveau prix journalier en CDF<input className="field mt-1" inputMode="decimal" pattern="\d+(?:[.,]\d{1,2})?" value={manualPrice} onChange={(event) => setManualPrice(event.target.value.replace(',', '.'))} required /></label>}
           <label className="label">Justification obligatoire<textarea className="field mt-1 min-h-24" minLength={3} maxLength={1000} value={reason} onChange={(event) => setReason(event.target.value)} required /></label>
           {error && <p className="text-sm text-red-600" role="alert">{error}</p>}
-          <div className="flex gap-2"><button className="btn-primary" disabled={mutation.isPending}>{mutation.isPending ? <Spinner /> : 'Enregistrer la décision'}</button><button className="btn-secondary" type="button" onClick={() => { setDecision(null); setError(''); }}>Annuler</button></div>
+          <div className="flex flex-wrap gap-2"><button className="btn-primary" disabled={mutation.isPending}>{mutation.isPending ? <Spinner /> : 'Enregistrer la décision'}</button><button className="btn-secondary" type="button" onClick={() => { setDecision(null); setError(''); }}>Annuler</button></div>
         </form>
       )}
       {error && !decision && <p className="text-sm text-red-600" role="alert">{error}</p>}
@@ -509,7 +509,7 @@ function Factor({ factor }: { factor: PricingFactor }) {
   return <li className="rounded-xl bg-slate-50 px-3 py-2 text-sm dark:bg-slate-800"><strong>{name.replaceAll('_', ' ')}</strong>{direction}{impact !== undefined ? ` · impact ${String(impact)}` : ''}</li>;
 }
 function Pagination({ page, count, hasNext, hasPrevious, onChange }: { page: number; count: number; hasNext: boolean; hasPrevious: boolean; onChange: (page: number) => void }) {
-  return <nav className="flex items-center justify-between" aria-label="Pagination"><p className="text-sm text-slate-500">{count} recommandation(s) · page {page}</p><div className="flex gap-2"><button className="btn-secondary !p-2.5" disabled={!hasPrevious} onClick={() => onChange(page - 1)} aria-label="Page précédente"><ChevronLeft size={18} /></button><button className="btn-secondary !p-2.5" disabled={!hasNext} onClick={() => onChange(page + 1)} aria-label="Page suivante"><ChevronRight size={18} /></button></div></nav>;
+  return <nav className="flex flex-wrap items-center justify-between gap-3" aria-label="Pagination"><p className="text-sm text-slate-500">{count} recommandation(s) · page {page}</p><div className="flex gap-2"><button className="btn-secondary !p-2.5" disabled={!hasPrevious} onClick={() => onChange(page - 1)} aria-label="Page précédente"><ChevronLeft size={18} /></button><button className="btn-secondary !p-2.5" disabled={!hasNext} onClick={() => onChange(page + 1)} aria-label="Page suivante"><ChevronRight size={18} /></button></div></nav>;
 }
 function formatDate(value: string) { return new Intl.DateTimeFormat('fr-CD', { timeZone: 'Africa/Kinshasa', dateStyle: 'medium' }).format(new Date(`${value}T12:00:00+01:00`)); }
 function formatDateTime(value: string) { return new Intl.DateTimeFormat('fr-CD', { timeZone: 'Africa/Kinshasa', dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value)); }

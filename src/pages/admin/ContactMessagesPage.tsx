@@ -68,7 +68,7 @@ export function ContactMessagesPage() {
       ) : (
         <div className="card overflow-hidden !p-0">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
+            <table className="min-w-[760px] w-full text-left text-sm">
               <thead className="bg-slate-50 text-xs uppercase text-slate-500 dark:bg-slate-800">
                 <tr>
                   {['Référence', 'Demandeur', 'Sujet', 'Statut', 'Reçu le'].map((h) => (

@@ -26,24 +26,24 @@ export function HomePage() {
     <main>
       <section className="relative overflow-hidden bg-gradient-to-br from-night-950 via-brand-900 to-brand-600 text-white">
         <div className="absolute inset-0 opacity-50 bg-[radial-gradient(circle_at_78%_30%,var(--brand-glow),transparent_38%)]" />
-        <div className="relative mx-auto grid min-h-[640px] max-w-7xl items-center gap-12 px-6 py-20 lg:grid-cols-2">
+        <div className="relative mx-auto grid min-h-[560px] max-w-7xl items-center gap-10 px-4 py-14 sm:min-h-[640px] sm:px-6 sm:py-20 lg:grid-cols-2">
           <div className="relative z-10">
-            <p className="mb-5 text-sm font-bold uppercase tracking-[.25em] text-brand-100">
+            <p className="mb-4 text-xs font-bold uppercase tracking-[.2em] text-brand-100 sm:mb-5 sm:text-sm sm:tracking-[.25em]">
               La mobilité, simplement
             </p>
-            <h1 className="max-w-3xl text-5xl font-black leading-[1.08] sm:text-6xl">
+            <h1 className="max-w-3xl text-4xl font-black leading-[1.08] min-[420px]:text-5xl sm:text-6xl">
               Trouvez le véhicule idéal pour tous vos déplacements
             </h1>
-            <p className="mt-6 max-w-xl text-lg leading-8 text-white/65">
+            <p className="mt-5 max-w-xl text-base leading-7 text-white/65 sm:mt-6 sm:text-lg sm:leading-8">
               Comparez les offres, vérifiez la disponibilité et réservez auprès d’agences de
               confiance depuis une seule plateforme.
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link className="btn-primary !px-6 !py-3.5" to="/vehicles">
+            <div className="mt-8 grid gap-3 min-[420px]:flex min-[420px]:flex-wrap">
+              <Link className="btn-primary w-full !px-5 !py-3.5 min-[420px]:w-auto sm:!px-6" to="/vehicles">
                 Rechercher un véhicule <ArrowRight size={18} />
               </Link>
               <Link
-                className="btn-secondary !border-white/20 !bg-white/5 !px-6 !py-3.5 !text-white"
+                className="btn-secondary w-full !border-white/20 !bg-white/5 !px-5 !py-3.5 !text-white min-[420px]:w-auto sm:!px-6"
                 to="/register"
               >
                 Créer un compte
@@ -57,7 +57,7 @@ export function HomePage() {
               const fd = new FormData(e.currentTarget);
               navigate(`/vehicles?brand=${encodeURIComponent(String(fd.get('brand') || ''))}`);
             }}
-            className="rounded-3xl bg-white p-6 text-ink shadow-2xl dark:bg-slate-900 dark:text-white"
+            className="rounded-2xl bg-white p-4 text-ink shadow-2xl dark:bg-slate-900 dark:text-white sm:rounded-3xl sm:p-6"
           >
             <h2 className="text-xl font-bold">Recherche rapide</h2>
             <p className="mt-1 text-sm text-slate-500">Quel véhicule recherchez-vous ?</p>
@@ -72,7 +72,7 @@ export function HomePage() {
           </div>
         </div>
       </section>
-      <section className="mx-auto max-w-7xl px-6 py-20">
+      <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20">
         <div className="flex items-end justify-between gap-4">
           <div>
             <p className="text-sm font-bold uppercase tracking-widest text-brand-600">
@@ -91,7 +91,7 @@ export function HomePage() {
         </div>
       </section>
       <section className="bg-white py-20 dark:bg-slate-900">
-        <div className="mx-auto max-w-7xl px-6">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="text-center">
             <p className="text-sm font-bold uppercase tracking-widest text-brand-600">
               Pourquoi 3N Services ?
@@ -125,7 +125,7 @@ export function HomePage() {
           </div>
         </div>
       </section>
-      <section className="mx-auto max-w-7xl px-6 py-20">
+      <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20">
         <div className="grid gap-8 lg:grid-cols-3">
           {[
             [Search, '1. Recherchez', 'Explorez les véhicules selon votre budget et vos besoins.'],
@@ -152,8 +152,8 @@ export function HomePage() {
           ))}
         </div>
       </section>
-      <section className="mx-auto max-w-7xl px-6 pb-20">
-        <div className="rounded-3xl bg-brand-700 px-8 py-12 text-center text-white">
+      <section className="mx-auto max-w-7xl px-4 pb-14 sm:px-6 sm:pb-20">
+        <div className="rounded-3xl bg-brand-700 px-4 py-10 text-center text-white sm:px-8 sm:py-12">
           <Car className="mx-auto" size={42} />
           <h2 className="mt-5 text-3xl font-bold">Prêt à trouver votre prochain véhicule ?</h2>
           <p className="mx-auto mt-3 max-w-xl text-brand-100">

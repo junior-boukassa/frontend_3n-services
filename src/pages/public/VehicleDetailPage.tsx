@@ -55,7 +55,7 @@ export function VehicleDetailPage() {
     else nav(destination);
   };
   return (
-    <main className="mx-auto max-w-7xl px-6 py-10">
+    <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10">
       <Link
         className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-brand-600"
         to="/vehicles"
@@ -64,7 +64,7 @@ export function VehicleDetailPage() {
       </Link>
       <div className="mt-7 grid gap-8 lg:grid-cols-[1.5fr_1fr]">
         <section>
-          <div className="grid h-[430px] place-items-center overflow-hidden rounded-3xl bg-gradient-to-br from-slate-100 to-brand-50 dark:from-slate-800 dark:to-brand-900">
+          <div className="grid aspect-[4/3] max-h-[430px] place-items-center overflow-hidden rounded-2xl bg-gradient-to-br from-slate-100 to-brand-50 dark:from-slate-800 dark:to-brand-900 sm:rounded-3xl">
             {selectedImage?.image ? (
               <img
                 className="size-full object-cover"
@@ -86,7 +86,7 @@ export function VehicleDetailPage() {
                   key={img.id}
                 >
                   <img
-                    className="h-24 w-full object-cover"
+                    className="aspect-[4/3] w-full object-cover sm:h-24"
                     src={img.image!}
                     alt={img.caption || `${v.brand} ${v.model}, vue ${index + 1}`}
                   />
@@ -96,7 +96,7 @@ export function VehicleDetailPage() {
           )}
         </section>
         <aside className="card h-fit lg:sticky lg:top-28">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <span
               className={`badge ${v.status === 'AVAILABLE' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}
             >
@@ -107,18 +107,18 @@ export function VehicleDetailPage() {
               {v.average_rating || '—'} ({v.review_count})
             </span>
           </div>
-          <h1 className="mt-5 text-3xl font-black">
+          <h1 className="mt-5 break-words text-2xl font-black sm:text-3xl">
             {v.brand} {v.model}
           </h1>
-          <p className="mt-2 flex items-center gap-1 text-sm text-slate-500">
+          <p className="mt-2 flex items-start gap-1 break-words text-sm text-slate-500">
             <MapPin size={15} />
             {v.owner_city || 'Localisation non renseignée'} ·{' '}
             {v.agency_name?.trim() || 'Agence Three-N Services'}
           </p>
-          <p className="mt-7 text-3xl font-black text-accent-500">
+          <p className="mt-7 break-words text-2xl font-black text-accent-500 sm:text-3xl">
             {formatCDFPerDay(Number(v.daily_price))}
           </p>
-          <div className="mt-6 grid grid-cols-2 gap-3 text-sm">
+          <div className="mt-6 grid gap-3 text-sm min-[360px]:grid-cols-2">
             {[
               [v.year || 'Non renseignée', 'Année'],
               [v.transmission ? (v.transmission === 'MANUAL' ? 'Manuelle' : 'Automatique') : 'Non renseignée', 'Transmission'],

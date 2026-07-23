@@ -21,7 +21,7 @@ export function AgenciesPage() {
     [q.data, search],
   );
   return (
-    <main className="mx-auto max-w-7xl px-6 py-14">
+    <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14">
       <header>
         <p className="text-sm font-bold uppercase tracking-widest text-brand-600">Professionnels</p>
         <h1 className="mt-3 text-4xl font-black">Agences de location</h1>
@@ -109,17 +109,17 @@ export function AgencyDetailPage() {
   if (q.isLoading) return <PageLoader />;
   if (q.error)
     return (
-      <main className="mx-auto max-w-4xl px-6 py-16">
+      <main className="mx-auto max-w-4xl px-4 py-12 sm:px-6 sm:py-16">
         <ErrorState message={apiError(q.error)} />
       </main>
     );
   const a = q.data!;
   return (
-    <main className="mx-auto max-w-7xl px-6 py-14">
+    <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14">
       <Link className="text-sm text-slate-500" to="/agencies">
         ← Toutes les agences
       </Link>
-      <header className="mt-7 flex flex-col gap-5 rounded-3xl bg-ink p-8 text-white sm:flex-row sm:items-center">
+      <header className="mt-7 flex flex-col gap-5 rounded-2xl bg-ink p-5 text-white sm:flex-row sm:items-center sm:rounded-3xl sm:p-8">
         <span className="grid size-20 place-items-center rounded-2xl bg-white/10">
           <Building2 size={38} />
         </span>

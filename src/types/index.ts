@@ -1,4 +1,5 @@
 export type Role = 'CLIENT' | 'AGENCY' | 'ADMIN';
+export type AgencyApprovalStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
 export interface Profile {
   company_name: string;
   address: string;
@@ -16,6 +17,8 @@ export interface User {
   role: Role;
   role_display: string;
   is_active: boolean;
+  agency_approval_status: AgencyApprovalStatus;
+  agency_approval_status_display: string;
   profile: Profile;
 }
 export interface Vehicle {
@@ -57,6 +60,18 @@ export interface Booking {
   duration_days: number;
   total_price: string;
   status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
+  created_at: string;
+  updated_at: string;
+}
+export type PaymentMethod = 'MOBILE_MONEY' | 'CARD' | 'CASH';
+export interface Payment {
+  id: number;
+  booking: number;
+  booking_vehicle: string;
+  amount: string;
+  method: PaymentMethod;
+  status: 'PENDING' | 'PAID' | 'FAILED' | 'REFUNDED';
+  transaction_reference: string;
   created_at: string;
   updated_at: string;
 }

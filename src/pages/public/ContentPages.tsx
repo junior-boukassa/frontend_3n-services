@@ -293,7 +293,7 @@ function Content({
   children: React.ReactNode;
 }) {
   return (
-    <main className="mx-auto max-w-7xl px-6 py-14">
+    <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14">
       <header className="mb-12 max-w-3xl">
         <p className="text-sm font-bold uppercase tracking-widest text-brand-600">{eyebrow}</p>
         <h1 className="mt-3 text-4xl font-black sm:text-5xl">{title}</h1>

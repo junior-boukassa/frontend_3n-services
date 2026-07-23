@@ -38,9 +38,23 @@ export function VehiclesPage() {
   });
   if (q.isLoading) return <PageLoader />;
   if (q.error) return <ErrorState message={apiError(q.error)} />;
-  const canWrite = user?.role === 'AGENCY' || user?.role === 'ADMIN';
+  const canWrite =
+    user?.role === 'ADMIN' ||
+    (user?.role === 'AGENCY' && user.agency_approval_status === 'APPROVED');
   return (
     <div className="space-y-6">
+      {user?.role === 'AGENCY' && user.agency_approval_status !== 'APPROVED' && (
+        <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+          <p className="font-semibold">
+            {user.agency_approval_status === 'REJECTED'
+              ? 'Votre agence a été refusée.'
+              : 'Votre agence est en attente de validation.'}
+          </p>
+          <p className="mt-1">
+            La publication de véhicules sera disponible après validation par un administrateur.
+          </p>
+        </div>
+      )}
       <div className="flex flex-col gap-4 sm:flex-row">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-3 text-slate-400" size={18} />
@@ -82,7 +96,7 @@ export function VehiclesPage() {
                   {v.status === 'AVAILABLE' ? 'Disponible' : v.status}
                 </span>
                 {canWrite && (user?.role === 'ADMIN' || v.owner === user?.id) && (
-                  <div className="absolute right-3 top-3 flex gap-2 opacity-0 group-hover:opacity-100">
+                  <div className="absolute right-3 top-3 flex gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100">
                     <button
                       onClick={() => setEditing(v)}
                       className="rounded-lg bg-white p-2 text-brand-600 shadow"
@@ -345,7 +359,7 @@ function VehicleForm({ onDone, vehicle }: { onDone: () => void; vehicle?: Vehicl
           }}
         />
         <p className="mt-1 text-xs text-slate-500">JPEG, PNG ou WebP, 5 Mo maximum par image.</p>
-        <div className="mt-3 grid grid-cols-3 gap-3">
+        <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
           {existingImages.map((image) => (
             <div className="relative overflow-hidden rounded-xl" key={image.id}>
               <img className="h-24 w-full object-cover" src={image.image!} alt="Image existante" />

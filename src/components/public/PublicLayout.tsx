@@ -24,7 +24,7 @@ export function PublicLayout() {
   return (
     <div className="min-h-screen">
       <header className="sticky top-0 z-40 border-b bg-white/90 backdrop-blur-xl dark:bg-slate-950/90">
-        <div className="mx-auto flex h-20 max-w-7xl items-center px-4 sm:px-6">
+        <div className="mx-auto flex h-16 max-w-7xl items-center px-4 sm:h-20 sm:px-6">
           <Link to="/" className="flex items-center gap-3 font-black tracking-wide">
             <span className="text-xl leading-none text-brand-900 dark:text-white">three-<b className="text-brand-500">N</b><small className="mt-1 block text-[8px] tracking-[.35em]">SERVICES</small></span>
           </Link>
@@ -69,7 +69,7 @@ export function PublicLayout() {
             )}
           </div>
           <button
-            className="ml-auto lg:hidden"
+            className="ml-auto grid size-11 shrink-0 place-items-center rounded-xl lg:hidden"
             onClick={() => setOpen(!open)}
             aria-expanded={open}
             aria-label="Menu"
@@ -78,7 +78,7 @@ export function PublicLayout() {
           </button>
         </div>
         {open && (
-          <nav className="border-t p-4 lg:hidden">
+          <nav className="max-h-[calc(100dvh-4rem)] overflow-y-auto border-t p-4 lg:hidden">
             {links.map(([to, label]) => (
               <Link
                 onClick={() => setOpen(false)}
@@ -89,7 +89,7 @@ export function PublicLayout() {
                 {label}
               </Link>
             ))}
-            <div className="mt-3 flex gap-2">
+            <div className="mt-3 grid gap-2 min-[380px]:grid-cols-2">
               {user ? (
                 <Link className="btn-primary flex-1" to="/app/dashboard">
                   Tableau de bord
@@ -116,7 +116,7 @@ export function PublicLayout() {
 export function PublicFooter() {
   return (
     <footer className="mt-20 bg-ink text-white">
-      <div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 md:grid-cols-4">
+      <div className="mx-auto grid max-w-7xl gap-9 px-4 py-12 sm:grid-cols-2 sm:px-6 md:grid-cols-4">
         <div>
           <div className="flex items-center gap-3 font-black">
             <span className="grid size-10 place-items-center rounded-xl bg-brand-500">3N</span>3N

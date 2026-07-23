@@ -52,14 +52,14 @@ function Shell({
         </div>
         <p className="text-xs text-white/40">© 2026 3N Services</p>
       </section>
-      <section className="grid place-items-center p-6">
+      <section className="grid place-items-center px-4 py-8 sm:p-6">
         <div className="w-full max-w-md">
           <div className="mb-8 lg:hidden">
             <span className="grid size-11 place-items-center rounded-xl bg-brand-600 font-bold text-white">
               3N
             </span>
           </div>
-          <h1 className="text-3xl font-bold">{title}</h1>
+          <h1 className="text-2xl font-bold sm:text-3xl">{title}</h1>
           <p className="mt-2 text-slate-500">{subtitle}</p>
           <div className="mt-8">{children}</div>
         </div>
@@ -101,7 +101,7 @@ export function LoginPage() {
           <p className="mt-1 text-xs text-red-600">{errors.email?.message}</p>
         </div>
         <div>
-          <div className="flex justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <label className="label" htmlFor="login-password">Mot de passe</label>
             <Link className="text-sm text-brand-600" to="/forgot-password">
               Mot de passe oublié ?
@@ -164,7 +164,11 @@ export function RegisterPage() {
   const submit = async (v: Register) => {
     try {
       await authService.register(v);
-      toast.success('Compte créé. Vous pouvez vous connecter.');
+      toast.success(
+        v.role === 'AGENCY'
+          ? "Compte créé. L'administrateur doit valider votre agence avant toute publication."
+          : 'Compte créé. Vous pouvez vous connecter.',
+      );
       nav('/login');
     } catch (e) {
       toast.error(apiError(e));

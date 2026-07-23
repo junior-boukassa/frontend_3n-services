@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Check, Plus, Search, Star, X } from 'lucide-react';
+import { Check, Plus, Search, Star } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -10,7 +10,7 @@ import { apiError } from '../api/client';
 import { EmptyState, ErrorState, Modal, PageLoader } from '../components/ui';
 import { useAuth } from '../contexts/AuthContext';
 import { dataService } from '../services';
-import type { Booking } from '../types';
+import type { Booking, User } from '../types';
 import { formatCDF, formatCDFPerDay } from '../utils/format';
 
 const statusLabel: Record<string, string> = {
@@ -32,7 +32,7 @@ function Table({ headers, rows }: { headers: string[]; rows: React.ReactNode[][]
   return (
     <div className="card overflow-hidden !p-0">
       <div className="overflow-x-auto">
-        <table className="w-full text-left text-sm">
+        <table className="min-w-[720px] w-full text-left text-sm">
           <thead className="bg-slate-50 text-xs uppercase text-slate-500 dark:bg-slate-800">
             <tr>
               {headers.map((h) => (
@@ -65,9 +65,7 @@ export function BookingsPage() {
   const q = useQuery({ queryKey: ['bookings'], queryFn: dataService.bookings });
   const action = useMutation({
     mutationFn: ({ id, status }: { id: number; status: Booking['status'] }) =>
-      status === 'CANCELLED' && user?.role === 'CLIENT'
-        ? dataService.cancelBooking(id)
-        : dataService.bookingStatus(id, status),
+      dataService.bookingStatus(id, status),
     onSuccess: () => {
       toast.success('Réservation mise à jour');
       void qc.invalidateQueries({ queryKey: ['bookings'] });
@@ -104,18 +102,6 @@ export function BookingsPage() {
             formatCDF(Number(b.total_price)),
             <span className={`badge ${badge(b.status)}`}>{statusLabel[b.status]}</span>,
             <div className="flex gap-2">
-              {user?.role === 'CLIENT' && b.status === 'PENDING' && (
-                <button
-                  className="btn-secondary !p-2 text-red-600"
-                  title="Annuler"
-                  onClick={() =>
-                    confirm('Annuler cette réservation ?') &&
-                    action.mutate({ id: b.id, status: 'CANCELLED' })
-                  }
-                >
-                  <X size={16} />
-                </button>
-              )}
               {user?.role !== 'CLIENT' && b.status === 'PENDING' && (
                 <button
                   className="btn-secondary !p-2 text-emerald-600"
@@ -266,12 +252,44 @@ export function ReviewsPage() {
 export function UsersPage() {
   const qc = useQueryClient();
   const [search, setSearch] = useState('');
+  const [creatingAgency, setCreatingAgency] = useState(false);
+  const {
+    register: registerAgency,
+    handleSubmit: handleAgencySubmit,
+    reset: resetAgency,
+    formState: { isSubmitting: isCreatingAgency },
+  } = useForm<{
+    email: string;
+    password: string;
+    first_name: string;
+    last_name: string;
+    phone: string;
+    company_name: string;
+  }>();
   const q = useQuery({ queryKey: ['users'], queryFn: dataService.users });
   const update = useMutation({
-    mutationFn: ({ id, active }: { id: number; active: boolean }) =>
-      dataService.updateUser(id, { is_active: active }),
+    mutationFn: ({ id, data }: { id: number; data: Partial<User> }) =>
+      dataService.updateUser(id, data),
     onSuccess: () => {
       toast.success('Compte mis à jour');
+      void qc.invalidateQueries({ queryKey: ['users'] });
+    },
+    onError: (e) => toast.error(apiError(e)),
+  });
+  const createAgency = useMutation({
+    mutationFn: dataService.createAgency,
+    onSuccess: () => {
+      toast.success('Agence créée et validée');
+      resetAgency();
+      setCreatingAgency(false);
+      void qc.invalidateQueries({ queryKey: ['users'] });
+    },
+    onError: (e) => toast.error(apiError(e)),
+  });
+  const remove = useMutation({
+    mutationFn: dataService.deleteUser,
+    onSuccess: () => {
+      toast.success('Compte supprimé');
       void qc.invalidateQueries({ queryKey: ['users'] });
     },
     onError: (e) => toast.error(apiError(e)),
@@ -281,17 +299,22 @@ export function UsersPage() {
   const users = q.data?.filter((u) => u.email.toLowerCase().includes(search.toLowerCase())) || [];
   return (
     <div className="space-y-5">
-      <div className="relative max-w-md">
-        <Search className="absolute left-3 top-3 text-slate-400" size={18} />
-        <input
-          className="field pl-10"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Rechercher un utilisateur…"
-        />
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="relative w-full max-w-md">
+          <Search className="absolute left-3 top-3 text-slate-400" size={18} />
+          <input
+            className="field pl-10"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Rechercher un utilisateur…"
+          />
+        </div>
+        <button className="btn-primary" onClick={() => setCreatingAgency(true)}>
+          <Plus size={17} /> Créer une agence
+        </button>
       </div>
       <Table
-        headers={['Utilisateur', 'Rôle', 'Téléphone', 'Statut', 'Action']}
+        headers={['Utilisateur', 'Rôle', 'Validation agence', 'Téléphone', 'Statut', 'Actions']}
         rows={users.map((u) => [
           <span>
             <b>
@@ -300,20 +323,112 @@ export function UsersPage() {
             <small className="block text-slate-500">{u.email}</small>
           </span>,
           u.role_display,
+          u.role === 'AGENCY' ? (
+            <span
+              className={`badge ${
+                u.agency_approval_status === 'APPROVED'
+                  ? 'bg-emerald-100 text-emerald-700'
+                  : u.agency_approval_status === 'REJECTED'
+                    ? 'bg-red-100 text-red-700'
+                    : 'bg-amber-100 text-amber-700'
+              }`}
+            >
+              {u.agency_approval_status_display}
+            </span>
+          ) : (
+            '—'
+          ),
           u.phone || '—',
           <span
             className={`badge ${u.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}
           >
             {u.is_active ? 'Actif' : 'Suspendu'}
           </span>,
-          <button
-            className="btn-secondary !py-2"
-            onClick={() => update.mutate({ id: u.id, active: !u.is_active })}
-          >
-            {u.is_active ? 'Suspendre' : 'Réactiver'}
-          </button>,
+          <div className="flex flex-wrap gap-2">
+            {u.role === 'AGENCY' && u.agency_approval_status !== 'APPROVED' && (
+              <button
+                className="btn-primary !py-2"
+                onClick={() =>
+                  update.mutate({ id: u.id, data: { agency_approval_status: 'APPROVED' } })
+                }
+              >
+                Valider
+              </button>
+            )}
+            {u.role === 'AGENCY' && u.agency_approval_status !== 'REJECTED' && (
+              <button
+                className="btn-secondary !py-2 text-red-600"
+                onClick={() =>
+                  update.mutate({ id: u.id, data: { agency_approval_status: 'REJECTED' } })
+                }
+              >
+                Refuser
+              </button>
+            )}
+            <button
+              className="btn-secondary !py-2"
+              onClick={() => update.mutate({ id: u.id, data: { is_active: !u.is_active } })}
+            >
+              {u.is_active ? 'Bloquer' : 'Débloquer'}
+            </button>
+            <button
+              className="btn-secondary !py-2 text-red-600"
+              onClick={() => {
+                if (window.confirm(`Supprimer définitivement le compte ${u.email} ?`)) {
+                  remove.mutate(u.id);
+                }
+              }}
+            >
+              Supprimer
+            </button>
+          </div>,
         ])}
       />
+      {creatingAgency && (
+        <Modal title="Créer une agence" onClose={() => setCreatingAgency(false)}>
+          <form
+            className="grid gap-4 sm:grid-cols-2"
+            onSubmit={handleAgencySubmit((data) => createAgency.mutate(data))}
+          >
+            <label className="label">
+              Prénom
+              <input className="field mt-1" required {...registerAgency('first_name')} />
+            </label>
+            <label className="label">
+              Nom
+              <input className="field mt-1" required {...registerAgency('last_name')} />
+            </label>
+            <label className="label sm:col-span-2">
+              Nom de l’agence
+              <input className="field mt-1" required {...registerAgency('company_name')} />
+            </label>
+            <label className="label sm:col-span-2">
+              E-mail
+              <input className="field mt-1" type="email" required {...registerAgency('email')} />
+            </label>
+            <label className="label">
+              Téléphone
+              <input className="field mt-1" {...registerAgency('phone')} />
+            </label>
+            <label className="label">
+              Mot de passe initial
+              <input
+                className="field mt-1"
+                type="password"
+                minLength={8}
+                required
+                {...registerAgency('password')}
+              />
+            </label>
+            <button
+              className="btn-primary sm:col-span-2"
+              disabled={isCreatingAgency || createAgency.isPending}
+            >
+              Créer et valider l’agence
+            </button>
+          </form>
+        </Modal>
+      )}
     </div>
   );
 }

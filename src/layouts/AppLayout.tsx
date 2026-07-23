@@ -91,7 +91,7 @@ export function AppLayout() {
         onClick={() => setOpen(false)}
       />
       <aside
-        className={`fixed inset-y-0 left-0 z-40 flex flex-col bg-ink text-white transition-all ${collapsed ? 'w-20' : 'w-64'} ${open ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
+        className={`fixed inset-y-0 left-0 z-40 flex w-[min(18rem,86vw)] flex-col bg-ink text-white transition-all lg:w-auto ${collapsed ? 'lg:w-20' : 'lg:w-64'} ${open ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
       >
         <div className="flex h-20 items-center gap-3 px-5">
           <div className="grid size-10 place-items-center rounded-xl bg-brand-500 font-black">
@@ -107,7 +107,7 @@ export function AppLayout() {
             <X />
           </button>
         </div>
-        <nav className="flex-1 space-y-1 px-3 py-4">
+        <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
           {items.map(([to, label, Icon]) => (
             <NavLink
               key={to}
@@ -131,15 +131,15 @@ export function AppLayout() {
         </button>
       </aside>
       <div className={`transition-all ${collapsed ? 'lg:ml-20' : 'lg:ml-64'}`}>
-        <header className="sticky top-0 z-20 flex h-20 items-center border-b bg-cream/90 px-4 backdrop-blur-xl dark:bg-slate-950/90 sm:px-7">
-          <button className="mr-4 lg:hidden" onClick={() => setOpen(true)}>
+        <header className="sticky top-0 z-20 flex h-16 items-center border-b bg-cream/90 px-3 backdrop-blur-xl dark:bg-slate-950/90 sm:h-20 sm:px-7">
+          <button className="mr-2 grid size-10 shrink-0 place-items-center rounded-xl lg:hidden sm:mr-4" onClick={() => setOpen(true)}>
             <Menu />
           </button>
-          <div>
+          <div className="min-w-0">
             <p className="text-xs text-slate-500">Espace / {current}</p>
-            <h1 className="text-lg font-bold">{current}</h1>
+            <h1 className="truncate text-sm font-bold min-[380px]:text-base sm:text-lg">{current}</h1>
           </div>
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-2">
             <button
               className="btn-secondary !p-2.5"
               onClick={toggleTheme}
@@ -149,7 +149,7 @@ export function AppLayout() {
             </button>
             <button
               onClick={() => nav('/app/profile')}
-              className="ml-1 flex items-center gap-3 rounded-xl p-2 hover:bg-white dark:hover:bg-slate-900"
+              className="hidden items-center gap-3 rounded-xl p-2 hover:bg-white dark:hover:bg-slate-900 min-[420px]:flex sm:ml-1"
             >
               <div className="grid size-9 place-items-center rounded-full bg-brand-100 font-bold text-brand-700">
                 {user?.first_name?.[0] || user?.email[0].toUpperCase()}
@@ -169,7 +169,7 @@ export function AppLayout() {
             </button>
           </div>
         </header>
-        <main className="p-4 sm:p-7">
+        <main className="min-w-0 p-3 min-[380px]:p-4 sm:p-7">
           <Outlet />
         </main>
       </div>

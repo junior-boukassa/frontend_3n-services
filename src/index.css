@@ -10,9 +10,28 @@
   * {
     @apply border-line dark:border-night-700;
   }
+  html {
+    @apply overflow-x-hidden;
+  }
   body {
-    @apply m-0 bg-cream text-ink antialiased dark:bg-night-950 dark:text-night-50;
+    @apply m-0 min-w-0 overflow-x-hidden bg-cream text-ink antialiased dark:bg-night-950 dark:text-night-50;
     font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  }
+  img,
+  svg,
+  video,
+  canvas {
+    max-width: 100%;
+  }
+  main,
+  section,
+  article,
+  aside,
+  header,
+  footer,
+  nav,
+  div {
+    min-width: 0;
   }
   button,
   input,
@@ -23,7 +42,7 @@
 }
 @layer components {
   .card {
-    @apply rounded-2xl border border-line bg-white p-5 shadow-soft dark:border-night-700 dark:bg-night-800;
+    @apply min-w-0 rounded-2xl border border-line bg-white p-4 shadow-soft dark:border-night-700 dark:bg-night-800 sm:p-5;
   }
   .btn {
     @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition disabled:pointer-events-none disabled:opacity-50;
@@ -35,13 +54,13 @@
     @apply btn border bg-white hover:bg-slate-50 dark:bg-slate-900 dark:hover:bg-slate-800;
   }
   .field {
-    @apply w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm placeholder:text-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 dark:border-night-700 dark:bg-night-900;
+    @apply block min-w-0 max-w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-base placeholder:text-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 dark:border-night-700 dark:bg-night-900 sm:text-sm;
   }
   .label {
     @apply mb-1.5 block text-sm font-medium;
   }
   .badge {
-    @apply inline-flex rounded-full px-2.5 py-1 text-xs font-semibold;
+    @apply inline-flex max-w-full items-center rounded-full px-2.5 py-1 text-xs font-semibold;
   }
 }
 
